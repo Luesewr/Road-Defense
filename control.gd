@@ -1,14 +1,5 @@
 extends GridContainer
 
-@export var selectedNode: TextureButton = null
-
-@export var textures: Dictionary = {
-	-1: preload("res://Textures/missing_texture.png"),
-	0: preload("res://Textures/grass.png"),
-	1: preload("res://Textures/basic_path.png"),
-	2: preload("res://Textures/conveyor_path.png"),
-}
-
 signal inside_control
 signal outside_control
 
@@ -23,13 +14,3 @@ func _process(delta):
 	elif is_inside and !inside:
 		is_inside = false
 		outside_control.emit()
-
-func setSelected(node):
-	if selectedNode != null:
-		selectedNode.dehighlight()
-	if selectedNode == node:
-		selectedNode = null
-	else:
-		selectedNode = node
-	if selectedNode != null:
-		selectedNode.highlight()

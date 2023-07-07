@@ -12,13 +12,13 @@ var cells = []
 var lastHoverIndex = 0
 var user_in_ui = false
 
-var controlPanel: GridContainer
-var textures: Dictionary
+var rootNode: Node
+var textures
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	controlPanel = get_node("../CanvasLayer/ControlPanel")
-	textures = controlPanel.get("textures")
+	rootNode = self.get_owner()
+	textures = rootNode.get("textures")
 	create_grid()
 	set_process_input(true)
 
@@ -43,12 +43,7 @@ func create_grid():
 #			cell.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 
 func get_selected_tile_type():
-	var selected_tile = controlPanel.get("selectedNode")
-	
-	if selected_tile == null:
-		return -1
-	
-	return selected_tile.get_meta("tile", -1)
+	return rootNode.get_selected_tile_type()
 
 func get_tile_type(index):
 	return cells[index].get("tileType")

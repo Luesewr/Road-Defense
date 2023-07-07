@@ -1,5 +1,6 @@
-[gd_scene load_steps=7 format=3 uid="uid://duovl5rl0w5fa"]
+[gd_scene load_steps=8 format=3 uid="uid://duovl5rl0w5fa"]
 
+[ext_resource type="Script" path="res://root_logic.gd" id="1_jm7f0"]
 [ext_resource type="Script" path="res://camera.gd" id="2_yw5f4"]
 [ext_resource type="Script" path="res://grid.gd" id="3_78gud"]
 [ext_resource type="Texture2D" uid="uid://c41b5b5s1xchi" path="res://Textures/basic_path.png" id="4_48s3h"]
@@ -8,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://btsu3vtqmkjr4" path="res://Textures/conveyor_path.png" id="6_smq8y"]
 
 [node name="Level_1" type="Node"]
+script = ExtResource("1_jm7f0")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(640, 360)
