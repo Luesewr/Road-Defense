@@ -54,12 +54,13 @@ func get_tile_type(index):
 	return cells[index].get("tileType")
 
 func _input(event):
+	var rect = Rect2(Vector2(0, 0), CELL_SIZE * GRID_SIZE)
 	# Check for mouse movement
 	if event is InputEventMouseMotion and !user_in_ui:
 		# Get the mouse position
 		var position = get_global_mouse_position()
 		# If the mouse is within the cell grid remove the hover effect of the last hovered cell and add the hover effect to the new hovered cell
-		if position.x >= 0 and position.x < CELL_SIZE.x * GRID_SIZE.x and position.y >= 0 and position.y < CELL_SIZE.y * GRID_SIZE.y:
+		if rect.has_point(position):
 			# Calculate the index
 			var index = floor(position.x / CELL_SIZE.x) + floor(position.y / CELL_SIZE.y) * GRID_SIZE.x
 			
@@ -96,7 +97,7 @@ func _input(event):
 		# Get the mouse position
 		var position = get_global_mouse_position()
 		# If the mouse is within the cell grid remove the hover effect of the last hovered cell and add the hover effect to the new hovered cell
-		if position.x >= 0 and position.x < CELL_SIZE.x * GRID_SIZE.x and position.y >= 0 and position.y < CELL_SIZE.y * GRID_SIZE.y:
+		if rect.has_point(position):
 			# Calculate the index
 			var index = floor(position.x / CELL_SIZE.x) + floor(position.y / CELL_SIZE.y) * GRID_SIZE.x
 			var selected_tile = get_selected_tile_type()

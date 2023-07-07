@@ -16,7 +16,7 @@ var is_inside = false
 
 func _process(delta):
 	var pos = get_global_mouse_position()
-	var inside = (pos.x >= self.position.x and pos.x <= self.position.x + self.size.x and pos.y >= self.position.y and pos.y <= self.position.y + self.size.y)
+	var inside = Rect2(self.position, self.size).has_point(pos)
 	if !is_inside and inside:
 		is_inside = true
 		inside_control.emit()
