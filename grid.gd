@@ -68,7 +68,6 @@ func process_hover():
 		var index = calc_cell_index_from_position(position)
 		set_hover(index)
 		
-		directionIndicator.visible = true
 		directionIndicator.position = floor(position / CELL_SIZE) * CELL_SIZE
 
 	else:
@@ -78,6 +77,7 @@ func process_hover():
 func set_hover(index: int):
 	if lastHoverIndex != index:
 		reset_modulation(lastHoverIndex)
+	
 
 	if get_selected_tile_type() == get_tile_type(index):
 		cells[index].modulate = HOVER_COLOR_REJECT
@@ -89,6 +89,8 @@ func set_hover(index: int):
 	if selected_tile_type != -1:
 		cells[index].texture = textures[selected_tile_type]
 		cells[index].rotation = dir_to_rad(currentDirection)
+		
+		directionIndicator.visible = true
 	else:
 		reset_modulation(index)
 		
