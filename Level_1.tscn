@@ -1,17 +1,18 @@
-[gd_scene load_steps=8 format=3 uid="uid://duovl5rl0w5fa"]
+[gd_scene load_steps=9 format=3 uid="uid://duovl5rl0w5fa"]
 
 [ext_resource type="Script" path="res://root_logic.gd" id="1_jm7f0"]
 [ext_resource type="Script" path="res://camera.gd" id="2_yw5f4"]
 [ext_resource type="Script" path="res://grid.gd" id="3_78gud"]
 [ext_resource type="Texture2D" uid="uid://c41b5b5s1xchi" path="res://Textures/basic_path.png" id="4_48s3h"]
 [ext_resource type="Script" path="res://control.gd" id="4_63irt"]
+[ext_resource type="Texture2D" uid="uid://cieioscrx6n54" path="res://Textures/arrow.png" id="4_av0fw"]
 [ext_resource type="Script" path="res://ui_tile_button.gd" id="5_uq4m3"]
 [ext_resource type="Texture2D" uid="uid://btsu3vtqmkjr4" path="res://Textures/conveyor_path.png" id="6_smq8y"]
 
 [node name="Level_1" type="Node"]
 script = ExtResource("1_jm7f0")
 
-[node name="Camera2D" type="Camera2D" parent="."]
+[node name="Camera" type="Camera2D" parent="."]
 position = Vector2(640, 360)
 position_smoothing_speed = 10.0
 drag_left_margin = 0.0
@@ -20,8 +21,16 @@ drag_right_margin = 0.0
 drag_bottom_margin = 0.0
 script = ExtResource("2_yw5f4")
 
-[node name="Node2D" type="Node2D" parent="."]
+[node name="Grid" type="Node2D" parent="."]
 script = ExtResource("3_78gud")
+
+[node name="DirectionIndicator" type="TextureRect" parent="Grid"]
+visible = false
+z_index = 1
+texture_filter = 1
+pivot_offset = Vector2(16, 16)
+texture = ExtResource("4_av0fw")
+stretch_mode = 4
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -60,7 +69,8 @@ metadata/tile = 2
 layout_mode = 2
 text = "Play"
 
-[connection signal="inside_control" from="CanvasLayer/ControlPanel" to="Node2D" method="_on_control_panel_inside_control"]
-[connection signal="outside_control" from="CanvasLayer/ControlPanel" to="Node2D" method="_on_control_panel_outside_control"]
+[connection signal="direction_changed" from="." to="Grid" method="_on_indicator_direction_changed"]
+[connection signal="inside_control" from="CanvasLayer/ControlPanel" to="Grid" method="_on_control_panel_inside_control"]
+[connection signal="outside_control" from="CanvasLayer/ControlPanel" to="Grid" method="_on_control_panel_outside_control"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/BasicPath" to="CanvasLayer/ControlPanel/BasicPath" method="_on_pressed"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/ConveyorBelt" to="CanvasLayer/ControlPanel/ConveyorBelt" method="_on_pressed"]
