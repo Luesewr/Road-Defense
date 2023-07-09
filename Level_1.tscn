@@ -3,11 +3,11 @@
 [ext_resource type="Script" path="res://root_logic.gd" id="1_jm7f0"]
 [ext_resource type="Script" path="res://camera.gd" id="2_yw5f4"]
 [ext_resource type="Script" path="res://grid.gd" id="3_78gud"]
-[ext_resource type="Texture2D" uid="uid://c41b5b5s1xchi" path="res://Textures/basic_path.png" id="4_48s3h"]
+[ext_resource type="Texture2D" uid="uid://dhnqtm53emla2" path="res://Textures/basic_path.png" id="4_48s3h"]
 [ext_resource type="Script" path="res://control.gd" id="4_63irt"]
-[ext_resource type="Texture2D" uid="uid://cieioscrx6n54" path="res://Textures/arrow.png" id="4_av0fw"]
+[ext_resource type="Texture2D" uid="uid://b6rc5jm4n42tk" path="res://Textures/arrow.png" id="4_av0fw"]
 [ext_resource type="Script" path="res://ui_tile_button.gd" id="5_uq4m3"]
-[ext_resource type="Texture2D" uid="uid://btsu3vtqmkjr4" path="res://Textures/conveyor_path.png" id="6_smq8y"]
+[ext_resource type="Texture2D" uid="uid://bahulbu27rm44" path="res://Textures/conveyor_path.png" id="6_smq8y"]
 
 [node name="Level_1" type="Node"]
 script = ExtResource("1_jm7f0")

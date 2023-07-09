@@ -1,10 +1,10 @@
 extends Node
 
 @export var textures: Dictionary = {
-	-1: preload("res://Textures/missing_texture.png"),
-	0: preload("res://Textures/grass.png"),
-	1: preload("res://Textures/basic_path.png"),
-	2: preload("res://Textures/conveyor_path.png"),
+	-1: [preload("res://Textures/missing_texture.png")],
+	0: [preload("res://Textures/grass.png")],
+	1: [preload("res://Textures/basic_path.png")],
+	2: [preload("res://Textures/conveyor_path.png"), preload("res://Textures/conveyor_path_2.png"), preload("res://Textures/conveyor_path_3.png"), preload("res://Textures/conveyor_path_4.png")],
 }
 
 @export var selectedNode: TextureButton = null

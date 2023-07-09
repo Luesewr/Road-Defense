@@ -1,9 +1,10 @@
 [gd_scene load_steps=3 format=3 uid="uid://cwo8ncahhwljy"]
 
 [ext_resource type="Script" path="res://cell.gd" id="1_6ys8y"]
-[ext_resource type="Texture2D" uid="uid://bcbkibeith0pt" path="res://Textures/grass.png" id="1_bbr86"]
+[ext_resource type="Texture2D" uid="uid://ba5nwl2dg2rkx" path="res://Textures/grass.png" id="1_bbr86"]
 
 [node name="Cell" type="TextureRect"]
+process_mode = 4
 texture_filter = 1
 texture = ExtResource("1_bbr86")
 script = ExtResource("1_6ys8y")

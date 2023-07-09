@@ -94,7 +94,7 @@ func set_hover(index: int):
 		cells[index].modulate = HOVER_COLOR_ACCEPT
 
 	if selected_tile_type != -1:
-		cells[index].texture = textures[selected_tile_type]
+		cells[index].set_tile_texture(textures[selected_tile_type])
 		cells[index].rotation = dir_to_rad(currentDirection)
 		
 		directionIndicator.visible = true
@@ -174,7 +174,7 @@ func reset_modulation(index: int):
 	reset_texture(index)
 
 func reset_texture(index: int):
-	cells[index].texture = textures[get_tile_type(index)]
+	cells[index].set_tile_texture(textures[get_tile_type(index)])
 	cells[index].rotation = dir_to_rad(get_tile_direction(index))
 
 func calc_cell_index_from_position(position: Vector2):

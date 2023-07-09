@@ -13,7 +13,7 @@ func _ready():
 	set_process_input(true)
 	set_modulate(unpressedColor)
 	rootNode = self.get_owner()
-	self.texture_normal = rootNode.get("textures")[tileType]
+	self.texture_normal = rootNode.get("textures")[tileType][0]
 
 func _on_pressed():
 	rootNode.set_selected_node(self)
