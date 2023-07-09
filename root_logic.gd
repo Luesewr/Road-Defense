@@ -9,12 +9,14 @@ extends Node
 
 @export var selectedNode: TextureButton = null
 @export var selectedDirection: int = 0
+@export var selectedCell: TextureRect = null
 
 var shiftActive = false
 
-signal direction_changed
+var Grid: Node2D
 
 func _ready():
+	Grid = get_node("Grid")
 	set_process_input(true)
 
 func _input(event):
@@ -28,10 +30,10 @@ func _input(event):
 			selectedDirection = (selectedDirection - 1 + 4) % 4
 		else:
 			selectedDirection = (selectedDirection + 1) % 4
-		direction_changed.emit(selectedDirection)
+		Grid.update_direction(selectedDirection)
 		
 
-func set_selected(node):
+func set_selected_node(node):
 	# Dehighlight old selected
 	if selectedNode != null:
 		selectedNode.dehighlight()
@@ -39,6 +41,7 @@ func set_selected(node):
 	if selectedNode != node:
 		selectedNode = node
 		selectedNode.highlight()
+		Grid.update_selected_cell(null)
 	else:
 		selectedNode = null
 
@@ -51,4 +54,14 @@ func get_selected_tile_type():
 	if selected == null:
 		return -1
 
-	return selected.get_meta("tile", -1)
+	return selected.get("tileType")
+
+func set_selected_cell(cell):
+	if self.selectedCell == null or cell == null or self.selectedCell.get_cell_index() != cell.get_cell_index():
+		self.selectedCell = cell
+	else:
+		self.selectedCell = null
+	Grid.process_hover()
+
+func get_selected_cell():
+	return self.selectedCell

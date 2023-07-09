@@ -52,7 +52,7 @@ tooltip_text = "Create a basic road"
 texture_normal = ExtResource("4_48s3h")
 stretch_mode = 4
 script = ExtResource("5_uq4m3")
-metadata/tile = 1
+tileType = 1
 
 [node name="ConveyorBelt" type="TextureButton" parent="CanvasLayer/ControlPanel"]
 texture_filter = 1
@@ -63,13 +63,12 @@ tooltip_text = "Create a basic road"
 texture_normal = ExtResource("6_smq8y")
 stretch_mode = 4
 script = ExtResource("5_uq4m3")
-metadata/tile = 2
+tileType = 2
 
 [node name="Button" type="Button" parent="CanvasLayer/ControlPanel"]
 layout_mode = 2
 text = "Play"
 
-[connection signal="direction_changed" from="." to="Grid" method="_on_indicator_direction_changed"]
 [connection signal="inside_control" from="CanvasLayer/ControlPanel" to="Grid" method="_on_control_panel_inside_control"]
 [connection signal="outside_control" from="CanvasLayer/ControlPanel" to="Grid" method="_on_control_panel_outside_control"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/BasicPath" to="CanvasLayer/ControlPanel/BasicPath" method="_on_pressed"]

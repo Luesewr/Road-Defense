@@ -1,6 +1,7 @@
 extends TextureButton
 
-var tileType: int = -1
+@export var tileType: int = 0
+
 var highlighted = false
 var pressedColor = Color(1, 1, 1)
 var unpressedColor = Color(0.7, 0.7, 0.7)
@@ -12,11 +13,10 @@ func _ready():
 	set_process_input(true)
 	set_modulate(unpressedColor)
 	rootNode = self.get_owner()
-	tileType = get_meta("tile", -1)
 	self.texture_normal = rootNode.get("textures")[tileType]
 
 func _on_pressed():
-	rootNode.set_selected(self)
+	rootNode.set_selected_node(self)
 
 func highlight():
 	set_modulate(pressedColor)
