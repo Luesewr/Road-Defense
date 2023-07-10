@@ -63,10 +63,18 @@ func get_selected_tile_type():
 	return selected.get("tileType")
 
 func set_selected_cell(cell):
+	var infoTexture = $CanvasLayer/InfoBox/TexturePanel/MarginContainer/InfoTexture
+	var infoBox = $CanvasLayer/InfoBox
 	if self.selectedCell == null or cell == null or self.selectedCell.get_cell_index() != cell.get_cell_index():
 		self.selectedCell = cell
+		if cell != null && cell.get_tile_type() > 0:
+			infoTexture.texture = logo_textures[cell.get_tile_type()]
+			infoBox.visible = true
+		else:
+			infoBox.visible = false
 	else:
 		self.selectedCell = null
+		infoBox.visible = false
 	Grid.process_hover()
 
 func get_selected_cell():

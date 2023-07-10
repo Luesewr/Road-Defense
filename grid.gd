@@ -101,7 +101,7 @@ func set_hover(index: int):
 		cells[index].modulate = HOVER_COLOR_ACCEPT
 
 	if selected_tile_type != -1:
-		cells[index].set_tile_texture([logo_textures[selected_tile_type]])
+		cells[index].set_tile_texture(textures[selected_tile_type])
 		cells[index].rotation = dir_to_rad(currentDirection)
 		
 		$DirectionIndicator.visible = true
