@@ -5,7 +5,7 @@ var prevCoords = null
 
 var MAX_ZOOM = Vector2(10, 10)
 var MIN_ZOOM = Vector2(0.5, 0.5)
-var Grid: Node2D
+var Grid: TextureRect
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	prevCoords = get_viewport().get_mouse_position()

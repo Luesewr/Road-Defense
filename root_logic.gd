@@ -2,9 +2,16 @@ extends Node
 
 @export var textures: Dictionary = {
 	-1: [preload("res://Textures/missing_texture.png")],
-	0: [preload("res://Textures/grass.png")],
+	0: [preload("res://Textures/no_texture.png")],
 	1: [preload("res://Textures/basic_path.png")],
 	2: [preload("res://Textures/conveyor_path.png"), preload("res://Textures/conveyor_path_2.png"), preload("res://Textures/conveyor_path_3.png"), preload("res://Textures/conveyor_path_4.png")],
+}
+
+@export var logo_textures: Dictionary = {
+	-1: preload("res://Textures/missing_texture.png"),
+	0: preload("res://Textures/no_texture.png"),
+	1: preload("res://Textures/basic_path_grass.png"),
+	2: preload("res://Textures/conveyor_path_grass.png"),
 }
 
 @export var selectedNode: TextureButton = null
@@ -13,7 +20,7 @@ extends Node
 
 var shiftActive = false
 
-var Grid: Node2D
+var Grid: TextureRect
 
 func _ready():
 	Grid = get_node("Grid")
@@ -31,7 +38,6 @@ func _input(event):
 		else:
 			selectedDirection = (selectedDirection + 1) % 4
 		Grid.update_direction(selectedDirection)
-		
 
 func set_selected_node(node):
 	# Dehighlight old selected

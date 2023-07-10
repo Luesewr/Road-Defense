@@ -1,4 +1,4 @@
-extends Node2D
+extends TextureRect
 
 var GRID_SIZE = Vector2(25, 25)
 var HOVER_COLOR_ACCEPT = Color(0.0, 0.7, 0.0)
@@ -17,27 +17,34 @@ var userInUI = false
 var currentDirection: int = 0
 
 var rootNode: Node
-var directionIndicator: TextureRect
 var textures: Dictionary
+var logo_textures: Dictionary
 @export var gridRect: Rect2 = Rect2(Vector2(0, 0), GRID_SIZE * CELL_SIZE)
 
 func _ready():
 	rootNode = self.get_owner()
 	textures = rootNode.get("textures")
-	
-	directionIndicator = get_node("DirectionIndicator")
+	logo_textures = rootNode.get("logo_textures")
 	
 	create_grid()
 	
-	directionIndicator.size = CELL_SIZE
-	directionIndicator.pivot_offset = directionIndicator.size / 2
+	$DirectionIndicator.size = CELL_SIZE
+	$DirectionIndicator.pivot_offset = $DirectionIndicator.size / 2
 	
 	set_process_input(true)
 
 func create_grid():
 	var cell_instance = cellScene.instantiate()
 	
-	CELL_SIZE = cell_instance.get_texture().get_size() * CELL_SCALAR
+	self.size = CELL_SIZE * GRID_SIZE
+	
+	var new_texture = Image.load_from_file("res://Textures/grass.png")
+	
+	CELL_SIZE = Vector2(new_texture.get_size()) * CELL_SCALAR
+	
+	new_texture.resize(CELL_SIZE.x, CELL_SIZE.y, Image.INTERPOLATE_NEAREST)
+	self.texture = ImageTexture.create_from_image(new_texture)
+	
 	gridRect = Rect2(Vector2(0, 0), CELL_SIZE * GRID_SIZE)
 	
 	for y in range(GRID_SIZE.y):
@@ -57,7 +64,7 @@ func _input(event):
 	
 	if userInUI:
 		reset_modulation(lastHoverIndex)
-		directionIndicator.visible = false
+		$DirectionIndicator.visible = false
 
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed() and !userInUI:
 		interact_cell()
@@ -71,11 +78,11 @@ func process_hover():
 		var index = calc_cell_index_from_position(position)
 		set_hover(index)
 		
-		directionIndicator.position = floor(position / CELL_SIZE) * CELL_SIZE
+		$DirectionIndicator.position = floor(position / CELL_SIZE) * CELL_SIZE
 
 	else:
 		reset_modulation(lastHoverIndex)
-		directionIndicator.visible = false
+		$DirectionIndicator.visible = false
 
 func set_hover(index: int):
 	if lastHoverIndex != index:
@@ -94,10 +101,10 @@ func set_hover(index: int):
 		cells[index].modulate = HOVER_COLOR_ACCEPT
 
 	if selected_tile_type != -1:
-		cells[index].set_tile_texture(textures[selected_tile_type])
+		cells[index].set_tile_texture([logo_textures[selected_tile_type]])
 		cells[index].rotation = dir_to_rad(currentDirection)
 		
-		directionIndicator.visible = true
+		$DirectionIndicator.visible = true
 	else:
 		reset_texture(index)
 		
@@ -138,7 +145,7 @@ func _on_control_panel_outside_control():
 
 func update_direction(direction: int):
 	currentDirection = direction
-	directionIndicator.rotation = dir_to_rad(direction)
+	$DirectionIndicator.rotation = dir_to_rad(direction)
 	process_hover()
 
 func get_selected_tile_type():
