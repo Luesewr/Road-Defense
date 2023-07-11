@@ -1,10 +1,9 @@
 extends TextureButton
 
-@export var tileType: int = 0
+@export var tile_type: int = 0
 
-var highlighted = false
-var PRESSED_COLOR = Color(1, 1, 1)
-var UNPRESSED_COLOR = Color(0.7, 0.7, 0.7)
+var PRESSED_COLOR: Color = Color(1, 1, 1)
+var UNPRESSED_COLOR: Color = Color(0.7, 0.7, 0.7)
 
 var LEVEL_NODE: Node
 
@@ -13,7 +12,7 @@ func _ready():
 	set_process_input(true)
 	set_modulate(UNPRESSED_COLOR)
 	LEVEL_NODE = get_node("/root/Level_1")
-	self.texture_normal = LEVEL_NODE.logo_textures[tileType]
+	self.texture_normal = LEVEL_NODE.LOGO_TEXTURES[tile_type]
 
 func _on_pressed():
 	LEVEL_NODE.set_selected_node(self)
