@@ -14,45 +14,42 @@ extends Node
 	2: preload("res://Textures/conveyor_path_grass.png"),
 }
 
-@export var selectedNode: TextureButton = null
-@export var selectedDirection: int = 0
-@export var selectedCell: TextureRect = null
+@export var selected_node: TextureButton = null
+@export var selected_direction: int = 0
+@export var selected_cell: TextureRect = null
 
-var shiftActive = false
-
-var Grid: TextureRect
+var shift_active = false
 
 func _ready():
-	Grid = get_node("Grid")
 	set_process_input(true)
 
 func _input(event):
 	if event is InputEventKey and event.keycode == KEY_SHIFT:
-		if event.is_pressed() and !shiftActive:
-			shiftActive = true
+		if event.is_pressed() and !shift_active:
+			shift_active = true
 		elif !event.is_pressed():
-			shiftActive = false
+			shift_active = false
 	if event is InputEventKey and event.keycode == KEY_R and event.is_pressed():
-		if shiftActive:
-			selectedDirection = (selectedDirection - 1 + 4) % 4
+		if shift_active:
+			selected_direction = (selected_direction - 1 + 4) % 4
 		else:
-			selectedDirection = (selectedDirection + 1) % 4
-		Grid.update_direction(selectedDirection)
+			selected_direction = (selected_direction + 1) % 4
+		$Grid.update_direction(selected_direction)
 
 func set_selected_node(node):
 	# Dehighlight old selected
-	if selectedNode != null:
-		selectedNode.dehighlight()
+	if selected_node != null:
+		selected_node.dehighlight()
 	# Select and highlight new node, select none if same tile was toggled twice in a row
-	if selectedNode != node:
-		selectedNode = node
-		selectedNode.highlight()
-		Grid.update_selected_cell(null)
+	if selected_node != node:
+		selected_node = node
+		selected_node.highlight()
+		$Grid.update_selected_cell(null)
 	else:
-		selectedNode = null
+		selected_node = null
 
 func get_selected():
-	return selectedNode
+	return selected_node
 	
 func get_selected_tile_type():
 	var selected = get_selected()
@@ -63,19 +60,19 @@ func get_selected_tile_type():
 	return selected.get("tileType")
 
 func set_selected_cell(cell):
-	var infoTexture = $CanvasLayer/InfoBox/TexturePanel/MarginContainer/InfoTexture
-	var infoBox = $CanvasLayer/InfoBox
-	if self.selectedCell == null or cell == null or self.selectedCell.get_cell_index() != cell.get_cell_index():
-		self.selectedCell = cell
+	var info_texture = $CanvasLayer/InfoBox/TexturePanel/MarginContainer/InfoTexture
+	var info_box = $CanvasLayer/InfoBox
+	if self.selected_cell == null or cell == null or self.selected_cell.get_cell_index() != cell.get_cell_index():
+		self.selected_cell = cell
 		if cell != null && cell.get_tile_type() > 0:
-			infoTexture.texture = logo_textures[cell.get_tile_type()]
-			infoBox.visible = true
+			info_texture.texture = logo_textures[cell.get_tile_type()]
+			info_box.visible = true
 		else:
-			infoBox.visible = false
+			info_box.visible = false
 	else:
-		self.selectedCell = null
-		infoBox.visible = false
-	Grid.process_hover()
+		self.selected_cell = null
+		info_box.visible = false
+	$Grid.process_hover()
 
 func get_selected_cell():
-	return self.selectedCell
+	return self.selected_cell

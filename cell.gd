@@ -1,9 +1,10 @@
 extends TextureRect
 
 @export var index: int
-@export var tileType: int = 0
+@export var tile_type: int = 0
 @export var direction: int = 0
 @export var textures: Array
+
 var animation_frames_per_second: float = 10.0
 
 func _process(delta):
@@ -17,11 +18,11 @@ func set_cell_index(index: int):
 func get_cell_index():
 	return self.index
 
-func set_tile_type(tileType: int):
-	self.tileType = tileType
+func set_tile_type(tile_type: int):
+	self.tile_type = tile_type
 
 func get_tile_type():
-	return self.tileType
+	return self.tile_type
 
 func set_tile_direction(direction: int):
 	self.direction = direction
