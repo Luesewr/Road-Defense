@@ -1,21 +1,15 @@
 extends GridContainer
 
-signal inside_control
-signal outside_control
+signal inside_control_update
 
 var is_inside: bool = false
 
 func _process(delta: float):
+	# Check the mouse is within the control panel
+	var inside: bool = Rect2(self.position, self.size).has_point(get_global_mouse_position())
 
-	var pos: Vector2 = get_global_mouse_position()
-	var inside: bool = Rect2(self.position, self.size).has_point(pos)
+	# Update the is_inside field if it is out of date
+	if self.is_inside != inside:
 
-	if !self.is_inside and inside:
-
-		self.is_inside = true
-		inside_control.emit()
-
-	elif self.is_inside and !inside:
-
-		self.is_inside = false
-		outside_control.emit()
+		self.is_inside = inside
+		inside_control_update.emit(inside)

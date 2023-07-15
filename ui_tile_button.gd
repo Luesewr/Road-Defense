@@ -14,11 +14,13 @@ func _ready():
 	LEVEL_NODE = get_node("/root/Level_1")
 	self.texture_normal = LEVEL_NODE.LOGO_TEXTURES[tile_type]
 
-func _on_pressed():
-	LEVEL_NODE.set_selected_node(self)
 
 func highlight():
-	set_modulate(PRESSED_COLOR)
+	self.modulate = PRESSED_COLOR
 
 func dehighlight():
-	set_modulate(UNPRESSED_COLOR)
+	self.modulate = UNPRESSED_COLOR
+
+
+func _on_pressed():
+	LEVEL_NODE.set_selected_node(self)

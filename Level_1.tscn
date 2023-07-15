@@ -108,7 +108,6 @@ size_flags_vertical = 3
 texture = ExtResource("3_bashn")
 stretch_mode = 4
 
-[connection signal="inside_control" from="CanvasLayer/ControlPanel" to="Grid" method="_on_control_panel_inside_control"]
-[connection signal="outside_control" from="CanvasLayer/ControlPanel" to="Grid" method="_on_control_panel_outside_control"]
+[connection signal="inside_control_update" from="CanvasLayer/ControlPanel" to="Grid" method="_on_inside_control_update"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/BasicPath" to="CanvasLayer/ControlPanel/BasicPath" method="_on_pressed"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/ConveyorBelt" to="CanvasLayer/ControlPanel/ConveyorBelt" method="_on_pressed"]

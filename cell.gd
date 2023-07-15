@@ -8,18 +8,22 @@ extends TextureRect
 var animation_frames_per_second: float = 10.0
 
 func _process(delta: float):
+	# Calculate and set the correct animation frame
 	var seconds: float = Time.get_ticks_msec() / 1000.0
 	var animation_frame_index: int = floori(self.animation_frames_per_second * seconds) % self.textures.size()
 	self.texture = self.textures[animation_frame_index]
 
 func set_tile_texture(textures: Array):
-	if self.texture == null or textures.size() == 0:
+	# Cancel texture set if textures argument is invalid
+	if textures.size() == 0:
 		return
 
+	# If the texture is not animated, disable processing, otherwise enable processing
 	if textures.size() == 1:
 		self.process_mode = Node.PROCESS_MODE_DISABLED
-		self.texture = textures[0]
 	else:
 		self.process_mode = Node.PROCESS_MODE_ALWAYS
 
+	# Update the texture and textures field
+	self.texture = textures[0]
 	self.textures = textures
