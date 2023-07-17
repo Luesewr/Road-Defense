@@ -110,12 +110,14 @@ size_flags_vertical = 3
 texture = ExtResource("3_bashn")
 stretch_mode = 4
 
-[node name="Button" type="Button" parent="CanvasLayer/InfoBox"]
+[node name="SellButton" type="Button" parent="CanvasLayer/InfoBox"]
 layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
 text = "Sell"
 
 [connection signal="inside_control_update" from="CanvasLayer/ControlPanel" to="Grid" method="_on_inside_control_update"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/BasicPath" to="CanvasLayer/ControlPanel/BasicPath" method="_on_pressed"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/ConveyorBelt" to="CanvasLayer/ControlPanel/ConveyorBelt" method="_on_pressed"]
 [connection signal="inside_control_update" from="CanvasLayer/InfoBox" to="Grid" method="_on_inside_control_update"]
-[connection signal="pressed" from="CanvasLayer/InfoBox/Button" to="." method="sell_cell"]
+[connection signal="pressed" from="CanvasLayer/InfoBox/SellButton" to="." method="sell_cell"]

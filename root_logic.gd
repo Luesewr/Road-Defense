@@ -95,9 +95,10 @@ func set_selected_cell(cell: TextureRect):
 
 
 func sell_cell():
-	selected_cell.tile_type = 0
-	selected_cell.direction = 0
-	selected_cell.set_tile_texture(TEXTURES[0])
+	if selected_cell != null:
+		selected_cell.tile_type = 0
+		selected_cell.direction = 0
+		selected_cell.set_tile_texture(TEXTURES[0])
 	
 	var info_box = $CanvasLayer/InfoBox
 	info_box.visible = false
