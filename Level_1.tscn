@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://duovl5rl0w5fa"]
+[gd_scene load_steps=11 format=3 uid="uid://duovl5rl0w5fa"]
 
 [ext_resource type="Script" path="res://root_logic.gd" id="1_jm7f0"]
 [ext_resource type="Script" path="res://camera.gd" id="2_yw5f4"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://cieioscrx6n54" path="res://Textures/arrow.png" id="4_av0fw"]
 [ext_resource type="Script" path="res://ui_tile_button.gd" id="5_uq4m3"]
 [ext_resource type="Texture2D" uid="uid://btsu3vtqmkjr4" path="res://Textures/conveyor_path.png" id="6_smq8y"]
+[ext_resource type="Script" path="res://info_box.gd" id="10_o8mup"]
 
 [node name="Level_1" type="Node"]
 script = ExtResource("1_jm7f0")
@@ -84,6 +85,7 @@ offset_left = -276.0
 offset_bottom = 573.0
 grow_horizontal = 0
 size_flags_horizontal = 3
+script = ExtResource("10_o8mup")
 
 [node name="TexturePanel" type="Panel" parent="CanvasLayer/InfoBox"]
 layout_mode = 2
@@ -108,6 +110,12 @@ size_flags_vertical = 3
 texture = ExtResource("3_bashn")
 stretch_mode = 4
 
+[node name="Button" type="Button" parent="CanvasLayer/InfoBox"]
+layout_mode = 2
+text = "Sell"
+
 [connection signal="inside_control_update" from="CanvasLayer/ControlPanel" to="Grid" method="_on_inside_control_update"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/BasicPath" to="CanvasLayer/ControlPanel/BasicPath" method="_on_pressed"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/ConveyorBelt" to="CanvasLayer/ControlPanel/ConveyorBelt" method="_on_pressed"]
+[connection signal="inside_control_update" from="CanvasLayer/InfoBox" to="Grid" method="_on_inside_control_update"]
+[connection signal="pressed" from="CanvasLayer/InfoBox/Button" to="." method="sell_cell"]

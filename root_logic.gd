@@ -92,3 +92,12 @@ func set_selected_cell(cell: TextureRect):
 
 	# Recalculate the hovering
 	$Grid.process_hover()
+
+
+func sell_cell():
+	selected_cell.tile_type = 0
+	selected_cell.direction = 0
+	selected_cell.set_tile_texture(TEXTURES[0])
+	
+	var info_box = $CanvasLayer/InfoBox
+	info_box.visible = false

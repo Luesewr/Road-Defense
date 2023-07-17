@@ -1,4 +1,4 @@
-extends GridContainer
+extends PanelContainer
 
 signal inside_control_update(in_ui: bool)
 
