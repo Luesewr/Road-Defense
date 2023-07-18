@@ -61,7 +61,7 @@ func set_selected_node(node: TextureButton):
 	else:
 		self.selected_node = null
 
-func get_selected_tile_type():
+func get_selected_tile_type() -> int:
 	# Return the tile type of the selected node if one exists or return -1
 	var selected = self.selected_node
 	

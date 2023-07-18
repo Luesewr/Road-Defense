@@ -225,16 +225,16 @@ func reset_texture(index: int):
 	CELLS[index].set_tile_texture(TEXTURES[get_tile_type(index)])
 	CELLS[index].rotation = dir_to_rad(get_tile_direction(index))
 
-func calc_cell_index_from_position(position: Vector2):
+func calc_cell_index_from_position(position: Vector2) -> int:
 	# Calculate index in the grid from the cursor position
 	return floor(position.x / CELL_SIZE.x) + floor(position.y / CELL_SIZE.y) * GRID_SIZE.x
 
-func dir_to_rad(direction: int):
+func dir_to_rad(direction: int) -> float:
 	# Calculate the angle in radians from the direction integer
 	return direction * PI * 0.5
 
 
-func get_selected_tile_type():
+func get_selected_tile_type() -> int:
 	return LEVEL_NODE.get_selected_tile_type()
 
 func set_selected_index(index: int):
@@ -243,16 +243,16 @@ func set_selected_index(index: int):
 func set_selected_cell(cell: TextureRect):
 	LEVEL_NODE.set_selected_cell(cell)
 
-func get_selected_cell():
+func get_selected_cell() -> TextureRect:
 	return LEVEL_NODE.selected_cell
 
-func get_tile_type(index: int):
+func get_tile_type(index: int) -> int:
 	return CELLS[index].tile_type
 
 func set_tile_type(index: int, tile_type: int):
 	CELLS[index].tile_type = tile_type
 
-func get_tile_direction(index: int):
+func get_tile_direction(index: int) -> int:
 	return CELLS[index].direction
 
 func set_tile_direction(index: int, direction: int):
