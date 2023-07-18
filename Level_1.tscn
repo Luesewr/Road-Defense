@@ -1,15 +1,16 @@
-[gd_scene load_steps=11 format=3 uid="uid://duovl5rl0w5fa"]
+[gd_scene load_steps=12 format=3 uid="uid://duovl5rl0w5fa"]
 
 [ext_resource type="Script" path="res://root_logic.gd" id="1_jm7f0"]
 [ext_resource type="Script" path="res://camera.gd" id="2_yw5f4"]
 [ext_resource type="Script" path="res://grid.gd" id="3_78gud"]
 [ext_resource type="Texture2D" uid="uid://bcbkibeith0pt" path="res://Textures/grass.png" id="3_bashn"]
-[ext_resource type="Texture2D" uid="uid://c41b5b5s1xchi" path="res://Textures/basic_path.png" id="4_48s3h"]
 [ext_resource type="Script" path="res://control.gd" id="4_63irt"]
 [ext_resource type="Texture2D" uid="uid://cieioscrx6n54" path="res://Textures/arrow.png" id="4_av0fw"]
 [ext_resource type="Script" path="res://ui_tile_button.gd" id="5_uq4m3"]
-[ext_resource type="Texture2D" uid="uid://btsu3vtqmkjr4" path="res://Textures/conveyor_path.png" id="6_smq8y"]
+[ext_resource type="Texture2D" uid="uid://vrx2fyvvaiab" path="res://Textures/basic_path_grass.png" id="7_563dr"]
+[ext_resource type="Texture2D" uid="uid://cq1iibi2gdwrv" path="res://Textures/corner_path_grass.png" id="9_dvmg0"]
 [ext_resource type="Script" path="res://info_box.gd" id="10_o8mup"]
+[ext_resource type="Texture2D" uid="uid://dbnqjeay3ddxk" path="res://Textures/conveyor_path_grass.png" id="10_symxm"]
 
 [node name="Level_1" type="Node"]
 script = ExtResource("1_jm7f0")
@@ -56,10 +57,21 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 tooltip_text = "Create a basic road"
-texture_normal = ExtResource("4_48s3h")
+texture_normal = ExtResource("7_563dr")
 stretch_mode = 4
 script = ExtResource("5_uq4m3")
 tile_type = 1
+
+[node name="CornerPath" type="TextureButton" parent="CanvasLayer/ControlPanel"]
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+tooltip_text = "Create a basic road"
+texture_normal = ExtResource("9_dvmg0")
+stretch_mode = 4
+script = ExtResource("5_uq4m3")
+tile_type = 2
 
 [node name="ConveyorBelt" type="TextureButton" parent="CanvasLayer/ControlPanel"]
 texture_filter = 1
@@ -67,10 +79,10 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 tooltip_text = "Create a conveyor belt"
-texture_normal = ExtResource("6_smq8y")
+texture_normal = ExtResource("10_symxm")
 stretch_mode = 4
 script = ExtResource("5_uq4m3")
-tile_type = 2
+tile_type = 3
 
 [node name="Button" type="Button" parent="CanvasLayer/ControlPanel"]
 layout_mode = 2
@@ -118,6 +130,7 @@ text = "Sell"
 
 [connection signal="inside_control_update" from="CanvasLayer/ControlPanel" to="Grid" method="_on_inside_control_update"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/BasicPath" to="CanvasLayer/ControlPanel/BasicPath" method="_on_pressed"]
+[connection signal="pressed" from="CanvasLayer/ControlPanel/CornerPath" to="CanvasLayer/ControlPanel/CornerPath" method="_on_pressed"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/ConveyorBelt" to="CanvasLayer/ControlPanel/ConveyorBelt" method="_on_pressed"]
 [connection signal="inside_control_update" from="CanvasLayer/InfoBox" to="Grid" method="_on_inside_control_update"]
 [connection signal="pressed" from="CanvasLayer/InfoBox/SellButton" to="." method="sell_cell"]
