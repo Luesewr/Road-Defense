@@ -13,8 +13,9 @@ var LEVEL_NODE: Node
 var CELL_SCENE: Resource = preload("res://Cell.tscn")
 var CELLS: Array[TextureRect] = []
 
-var TEXTURES: Dictionary
-var LOGO_TEXTURES: Dictionary
+#var TEXTURES: Dictionary
+#var LOGO_TEXTURES: Dictionary
+var DATA: Dictionary
 
 var last_hover_index: int = 0
 var user_in_ui: bool = false
@@ -26,8 +27,7 @@ var current_direction: int = 0
 func _ready():
 	# Initialise variables
 	LEVEL_NODE = get_node("/root/Level_1")
-	TEXTURES = LEVEL_NODE.TEXTURES
-	LOGO_TEXTURES = LEVEL_NODE.LOGO_TEXTURES
+	DATA = LEVEL_NODE.DATA
 	
 	# Create the grass background
 	create_background()
@@ -143,7 +143,7 @@ func set_hover(index: int):
 
 	# If a tile is selected display the selected tile type on the hovered cell with the current direction
 	if selected_tile_type != -1:
-		CELLS[index].set_tile_texture(TEXTURES[selected_tile_type])
+		CELLS[index].set_tile_texture(DATA[selected_tile_type]["texture"])
 		CELLS[index].rotation = dir_to_rad(self.current_direction)
 		# Make the direction indicator visible
 		$DirectionIndicator.visible = true
@@ -222,7 +222,7 @@ func reset_modulation(index: int):
 
 func reset_texture(index: int):
 	# Set the texture and rotation of a cell back to its original values
-	CELLS[index].set_tile_texture(TEXTURES[get_tile_type(index)])
+	CELLS[index].set_tile_texture(DATA[get_tile_type(index)]["texture"])
 	CELLS[index].rotation = dir_to_rad(get_tile_direction(index))
 
 func calc_cell_index_from_position(position: Vector2) -> int:

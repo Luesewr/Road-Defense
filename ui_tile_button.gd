@@ -12,7 +12,7 @@ func _ready():
 	set_process_input(true)
 	set_modulate(UNPRESSED_COLOR)
 	LEVEL_NODE = get_node("/root/Level_1")
-	self.texture_normal = LEVEL_NODE.LOGO_TEXTURES[tile_type]
+	self.texture_normal = LEVEL_NODE.DATA[tile_type]["logo"]
 
 
 func highlight():

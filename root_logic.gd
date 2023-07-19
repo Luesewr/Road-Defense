@@ -1,6 +1,6 @@
 extends Node
 
-@export var TEXTURES: Dictionary = {
+var TEXTURES: Dictionary = {
 	-1: [preload("res://Textures/missing_texture.png")],
 	0: [preload("res://Textures/no_texture.png")],
 	1: [preload("res://Textures/basic_path.png")],
@@ -8,7 +8,7 @@ extends Node
 	3: [preload("res://Textures/conveyor_path.png"), preload("res://Textures/conveyor_path_2.png"), preload("res://Textures/conveyor_path_3.png"), preload("res://Textures/conveyor_path_4.png")],
 }
 
-@export var LOGO_TEXTURES: Dictionary = {
+var LOGO_TEXTURES: Dictionary = {
 	-1: preload("res://Textures/missing_texture.png"),
 	0: preload("res://Textures/no_texture.png"),
 	1: preload("res://Textures/basic_path_grass.png"),
@@ -16,11 +16,24 @@ extends Node
 	3: preload("res://Textures/conveyor_path_grass.png"),
 }
 
+@export var DATA: Dictionary
+
 @export var selected_node: TextureButton = null
 @export var selected_direction: int = 0
 @export var selected_cell: TextureRect = null
 
 var shift_active: bool = false
+
+func _init():
+	DATA = {}
+	
+	for key in TEXTURES.keys():
+		DATA[key] = {
+			'texture': TEXTURES[key],
+			'logo': LOGO_TEXTURES[key],
+		}
+	
+	print(DATA)
 
 func _ready():
 	# Enable input processing
