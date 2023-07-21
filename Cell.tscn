@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://cwo8ncahhwljy"]
 
 [ext_resource type="Script" path="res://cell.gd" id="1_6ys8y"]
-[ext_resource type="Texture2D" uid="uid://dsk1jrnpnwodt" path="res://Textures/no_texture.png" id="1_ocil7"]
+[ext_resource type="Texture2D" uid="uid://cgdkfnrpd0qtm" path="res://Textures/no_texture.png" id="1_ocil7"]
 
 [node name="Cell" type="TextureRect"]
 process_mode = 4

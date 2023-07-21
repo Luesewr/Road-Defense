@@ -7,10 +7,10 @@
 [ext_resource type="Script" path="res://control.gd" id="4_63irt"]
 [ext_resource type="Texture2D" uid="uid://cieioscrx6n54" path="res://Textures/arrow.png" id="4_av0fw"]
 [ext_resource type="Script" path="res://ui_tile_button.gd" id="5_uq4m3"]
-[ext_resource type="Texture2D" uid="uid://vrx2fyvvaiab" path="res://Textures/basic_path_grass.png" id="7_563dr"]
-[ext_resource type="Texture2D" uid="uid://cq1iibi2gdwrv" path="res://Textures/corner_path_grass.png" id="9_dvmg0"]
+[ext_resource type="Texture2D" uid="uid://hmit751l7mkq" path="res://Textures/basic_path_grass.png" id="7_563dr"]
+[ext_resource type="Texture2D" uid="uid://dsc0v16by16jt" path="res://Textures/corner_path_grass.png" id="9_dvmg0"]
+[ext_resource type="Texture2D" uid="uid://dpafp1im276lh" path="res://Textures/conveyor_belt_grass.png" id="10_24e7n"]
 [ext_resource type="Script" path="res://info_box.gd" id="10_o8mup"]
-[ext_resource type="Texture2D" uid="uid://dbnqjeay3ddxk" path="res://Textures/conveyor_path_grass.png" id="10_symxm"]
 
 [node name="Level_1" type="Node"]
 script = ExtResource("1_jm7f0")
@@ -79,7 +79,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 tooltip_text = "Create a conveyor belt"
-texture_normal = ExtResource("10_symxm")
+texture_normal = ExtResource("10_24e7n")
 stretch_mode = 4
 script = ExtResource("5_uq4m3")
 tile_type = 3

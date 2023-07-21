@@ -5,13 +5,19 @@ extends TextureRect
 @export var direction: int = 0
 @export var textures: Array
 
+var LEVEL_NODE: Node
+
 var animation_frames_per_second: float = 10.0
+
+func _ready():
+	LEVEL_NODE = get_node("/root/Level_1")
 
 func _process(delta: float):
 	# Calculate and set the correct animation frame
 	var seconds: float = Time.get_ticks_msec() / 1000.0
 	var animation_frame_index: int = floori(self.animation_frames_per_second * seconds) % self.textures.size()
 	self.texture = self.textures[animation_frame_index]
+
 
 func set_tile_texture(textures: Array):
 	# Cancel texture set if textures argument is invalid
@@ -27,3 +33,6 @@ func set_tile_texture(textures: Array):
 	# Update the texture and textures field
 	self.texture = textures[0]
 	self.textures = textures
+
+func update_tile_texture():
+	set_tile_texture(LEVEL_NODE.DATA[self.tile_type]['texture'])

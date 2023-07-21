@@ -1,19 +1,27 @@
 extends Node
 
 var TEXTURES: Dictionary = {
-	-1: [preload("res://Textures/missing_texture.png")],
-	0: [preload("res://Textures/no_texture.png")],
-	1: [preload("res://Textures/basic_path.png")],
-	2: [preload("res://Textures/corner_path.png")],
-	3: [preload("res://Textures/conveyor_path.png"), preload("res://Textures/conveyor_path_2.png"), preload("res://Textures/conveyor_path_3.png"), preload("res://Textures/conveyor_path_4.png")],
+	TILE_TYPE.MISSING: [preload("res://Textures/missing_texture.png")],
+	TILE_TYPE.NONE: [preload("res://Textures/no_texture.png")],
+	TILE_TYPE.BASIC_PATH: [preload("res://Textures/basic_path.png")],
+	TILE_TYPE.CORNER_PATH: [preload("res://Textures/corner_path.png")],
+	TILE_TYPE.CONVEYOR_BELT: [preload("res://Textures/conveyor_belt.png"), preload("res://Textures/conveyor_belt_2.png"), preload("res://Textures/conveyor_belt_3.png"), preload("res://Textures/conveyor_belt_4.png")],
 }
 
 var LOGO_TEXTURES: Dictionary = {
-	-1: preload("res://Textures/missing_texture.png"),
-	0: preload("res://Textures/no_texture.png"),
-	1: preload("res://Textures/basic_path_grass.png"),
-	2: preload("res://Textures/corner_path_grass.png"),
-	3: preload("res://Textures/conveyor_path_grass.png"),
+	TILE_TYPE.MISSING: preload("res://Textures/missing_texture.png"),
+	TILE_TYPE.NONE: preload("res://Textures/no_texture.png"),
+	TILE_TYPE.BASIC_PATH: preload("res://Textures/basic_path_grass.png"),
+	TILE_TYPE.CORNER_PATH: preload("res://Textures/corner_path_grass.png"),
+	TILE_TYPE.CONVEYOR_BELT: preload("res://Textures/conveyor_belt_grass.png"),
+}
+
+var CONNECTION_DIRECTIONS: Dictionary = {
+	TILE_TYPE.MISSING: [],
+	TILE_TYPE.NONE: [],
+	TILE_TYPE.BASIC_PATH: [0, 2],
+	TILE_TYPE.CORNER_PATH: [1, 2],
+	TILE_TYPE.CONVEYOR_BELT: [0, 2],
 }
 
 @export var DATA: Dictionary
@@ -31,9 +39,8 @@ func _init():
 		DATA[key] = {
 			'texture': TEXTURES[key],
 			'logo': LOGO_TEXTURES[key],
+			'connections': CONNECTION_DIRECTIONS[key],
 		}
-	
-	print(DATA)
 
 func _ready():
 	# Enable input processing
@@ -48,15 +55,18 @@ func _input(event: InputEvent):
 		
 		# Check if the R key was pressed
 		elif event.keycode == KEY_R and event.is_pressed():
-			# Decrease or increase the selected direction according to the state of the shift key
-			if self.shift_active:
-				self.selected_direction = (self.selected_direction - 1 + 4) % 4
-			else:
-				self.selected_direction = (self.selected_direction + 1) % 4
+			process_rotation_press()
 
-			# Update the selected direction and recalculate the hovering
-			$Grid.update_direction(self.selected_direction)
-			$Grid.process_hover()
+func process_rotation_press():
+	# Decrease or increase the selected direction according to the state of the shift key
+	if self.shift_active:
+		self.selected_direction = (self.selected_direction - 1 + 4) % 4
+	else:
+		self.selected_direction = (self.selected_direction + 1) % 4
+
+	# Update the selected direction and recalculate the hovering
+	$Grid.update_direction(self.selected_direction)
+	$Grid.process_hover()
 
 func set_selected_node(node: TextureButton):
 	# Dehighlight old selected
@@ -111,9 +121,9 @@ func set_selected_cell(cell: TextureRect):
 
 func sell_cell():
 	if selected_cell != null:
-		selected_cell.tile_type = 0
+		selected_cell.tile_type = TILE_TYPE.NONE
 		selected_cell.direction = 0
-		selected_cell.set_tile_texture(TEXTURES[0])
+		selected_cell.update_tile_texture()
 	
 	var info_box = $CanvasLayer/InfoBox
 	info_box.visible = false

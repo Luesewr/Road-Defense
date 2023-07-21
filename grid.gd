@@ -13,8 +13,9 @@ var LEVEL_NODE: Node
 var CELL_SCENE: Resource = preload("res://Cell.tscn")
 var CELLS: Array[TextureRect] = []
 
-#var TEXTURES: Dictionary
-#var LOGO_TEXTURES: Dictionary
+var SPAWNERS: Array[Vector2] = [Vector2(0, 0)]
+var GOALS: Array[Vector2] = [Vector2(10, 10)]
+
 var DATA: Dictionary
 
 var last_hover_index: int = 0
@@ -35,12 +36,16 @@ func _ready():
 	# Generate a grid of cells
 	create_grid()
 	
+	# Create the spawning places and goals
+	create_spawns_and_goals()
+	
 	# Set the size and offset for the direction indicator
-	$DirectionIndicator.size = CELL_SIZE
-	$DirectionIndicator.pivot_offset = CELL_SIZE / 2
+#	$DirectionIndicator.size = CELL_SIZE
+#	$DirectionIndicator.pivot_offset = CELL_SIZE / 2
 	
 	# Enable input processing
 	set_process_input(true)
+
 
 func create_background():
 	# Load the grass texture
@@ -81,12 +86,15 @@ func create_cell(x: int, y: int):
 	# Add the new cell to the tree
 	add_child(cell)
 
+func create_spawns_and_goals():
+	for spawn in SPAWNERS:
+		CELLS[calc_cell_index_from_position(spawn)].tile_type = 3
 
 func _input(event: InputEvent):
 	# If the user is in the UI remove any hovering effects and stop showing the direction indicator
 	if self.user_in_ui:
 		reset_modulation(self.last_hover_index)
-		$DirectionIndicator.visible = false
+#		$DirectionIndicator.visible = false
 
 	# Calculate hovering if the mouse was moved
 	elif event is InputEventMouseMotion:
@@ -107,12 +115,12 @@ func process_hover():
 		var index: int = calc_cell_index_from_position(position)
 		set_hover(index)
 		# Update the location of the direction indicator
-		$DirectionIndicator.position = floor(position / CELL_SIZE) * CELL_SIZE
+#		$DirectionIndicator.position = floor(position / CELL_SIZE) * CELL_SIZE
 
 	# If the user was not in the grid remove any hovering effects and stop showing the direction indicator
 	else:
 		reset_modulation(self.last_hover_index)
-		$DirectionIndicator.visible = false
+#		$DirectionIndicator.visible = false
 
 
 func set_hover(index: int):
@@ -146,7 +154,7 @@ func set_hover(index: int):
 		CELLS[index].set_tile_texture(DATA[selected_tile_type]["texture"])
 		CELLS[index].rotation = dir_to_rad(self.current_direction)
 		# Make the direction indicator visible
-		$DirectionIndicator.visible = true
+#		$DirectionIndicator.visible = true
 
 	# Reset the texture and rotation of the cell if no tile is selected
 	else:
@@ -203,7 +211,7 @@ func update_selected_cell(cell: TextureRect):
 func update_direction(direction: int):
 	# Update the current direction and update the direction of the direction indicator
 	self.current_direction = direction
-	$DirectionIndicator.rotation = dir_to_rad(direction)
+#	$DirectionIndicator.rotation = dir_to_rad(direction)
 
 func reset_modulation(index: int):
 	# Get the selected cell
@@ -222,7 +230,7 @@ func reset_modulation(index: int):
 
 func reset_texture(index: int):
 	# Set the texture and rotation of a cell back to its original values
-	CELLS[index].set_tile_texture(DATA[get_tile_type(index)]["texture"])
+	CELLS[index].update_tile_texture()
 	CELLS[index].rotation = dir_to_rad(get_tile_direction(index))
 
 func calc_cell_index_from_position(position: Vector2) -> int:
