@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://cwo8ncahhwljy"]
+
+[ext_resource type="Texture2D" uid="uid://byyh37vy1e6fr" path="res://Textures/no_texture.png" id="1_10822"]
+[ext_resource type="Script" path="res://cell.gd" id="2_vdqvu"]
+
+[node name="Cell" type="TextureRect"]
+process_mode = 4
+texture_filter = 1
+texture = ExtResource("1_10822")
+script = ExtResource("2_vdqvu")

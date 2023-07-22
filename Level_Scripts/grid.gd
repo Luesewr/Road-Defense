@@ -10,7 +10,7 @@ var CELL_SCALAR: Vector2 = Vector2(3, 3)
 var CELL_SIZE: Vector2 = Vector2(32, 32) * CELL_SCALAR
 
 var LEVEL_NODE: Node
-var CELL_SCENE: Resource = preload("res://Cell.tscn")
+var CELL_SCENE: Resource = preload("res://Scenes/Cell.tscn")
 var CELLS: Array[TextureRect] = []
 
 var SPAWNERS: Array[Vector2] = [Vector2(0, 0)]
