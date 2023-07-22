@@ -1,10 +1,50 @@
 [gd_scene load_steps=3 format=3 uid="uid://cwo8ncahhwljy"]
 
 [ext_resource type="Texture2D" uid="uid://byyh37vy1e6fr" path="res://Textures/no_texture.png" id="1_10822"]
-[ext_resource type="Script" path="res://cell.gd" id="2_vdqvu"]
+
+[sub_resource type="GDScript" id="GDScript_kq4ud"]
+script/source = "extends TextureRect
+
+@export var index: int = -1
+@export var tile_type: int = 0
+@export var direction: int = 0
+@export var textures: Array
+
+var LEVEL_NODE: Node
+
+var animation_frames_per_second: float = 10.0
+
+func _ready():
+	LEVEL_NODE = get_node(\"/root/Level_1\")
+
+func _process(delta: float):
+	# Calculate and set the correct animation frame
+	var seconds: float = Time.get_ticks_msec() / 1000.0
+	var animation_frame_index: int = floori(self.animation_frames_per_second * seconds) % self.textures.size()
+	self.texture = self.textures[animation_frame_index]
+
+
+func set_tile_texture(textures: Array):
+	# Cancel texture set if textures argument is invalid
+	if textures.size() == 0:
+		return
+
+	# If the texture is not animated, disable processing, otherwise enable processing
+	if textures.size() == 1:
+		self.process_mode = Node.PROCESS_MODE_DISABLED
+	else:
+		self.process_mode = Node.PROCESS_MODE_ALWAYS
+
+	# Update the texture and textures field
+	self.texture = textures[0]
+	self.textures = textures
+
+func update_tile_texture():
+	set_tile_texture(LEVEL_NODE.DATA[self.tile_type]['texture'])
+"
 
 [node name="Cell" type="TextureRect"]
 process_mode = 4
 texture_filter = 1
 texture = ExtResource("1_10822")
-script = ExtResource("2_vdqvu")
+script = SubResource("GDScript_kq4ud")
