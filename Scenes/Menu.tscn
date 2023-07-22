@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ch6f7fc7y17yw"]
 
-[ext_resource type="Script" path="res://level_1.gd" id="1_b6yui"]
+[ext_resource type="Script" path="res://level_1.gd" id="1_m8oo7"]
 
 [node name="main_menu" type="Control"]
 layout_mode = 3
@@ -18,6 +18,6 @@ offset_right = 115.0
 offset_bottom = 82.0
 scale = Vector2(1.52, 1.52)
 text = "Level 1"
-script = ExtResource("1_b6yui")
+script = ExtResource("1_m8oo7")
 
 [connection signal="pressed" from="Button" to="Button" method="_on_pressed"]
