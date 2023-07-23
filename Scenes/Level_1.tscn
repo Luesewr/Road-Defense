@@ -1,549 +1,19 @@
 [gd_scene load_steps=12 format=3 uid="uid://duovl5rl0w5fa"]
 
+[ext_resource type="Script" path="res://Level_Scripts/root_logic.gd" id="1_7psmx"]
+[ext_resource type="Script" path="res://Level_Scripts/camera.gd" id="2_4kfdt"]
 [ext_resource type="Texture2D" uid="uid://ctoweis6jomlm" path="res://Textures/grass.png" id="3_bvl1p"]
+[ext_resource type="Script" path="res://Level_Scripts/grid.gd" id="4_ut40f"]
 [ext_resource type="Texture2D" uid="uid://dplsid8n5qwkq" path="res://Textures/arrow.png" id="5_igrk4"]
+[ext_resource type="Script" path="res://Level_Scripts/control.gd" id="6_ibcbb"]
 [ext_resource type="Texture2D" uid="uid://bqpunbnt87r75" path="res://Textures/basic_path_grass.png" id="7_i4af0"]
+[ext_resource type="Script" path="res://Level_Scripts/ui_tile_button.gd" id="8_aj175"]
 [ext_resource type="Texture2D" uid="uid://b1h285cr65wpq" path="res://Textures/corner_path_grass.png" id="9_l5nnu"]
 [ext_resource type="Texture2D" uid="uid://b6u0a3h31njar" path="res://Textures/conveyor_belt_grass.png" id="10_m7jg6"]
-
-[sub_resource type="GDScript" id="GDScript_ocds3"]
-script/source = "extends Node
-
-var TEXTURES: Dictionary = {
-	TILE_TYPE.MISSING: [preload(\"res://Textures/missing_texture.png\")],
-	TILE_TYPE.NONE: [preload(\"res://Textures/no_texture.png\")],
-	TILE_TYPE.BASIC_PATH: [preload(\"res://Textures/basic_path.png\")],
-	TILE_TYPE.CORNER_PATH: [preload(\"res://Textures/corner_path.png\")],
-	TILE_TYPE.CONVEYOR_BELT: [preload(\"res://Textures/conveyor_belt.png\"), preload(\"res://Textures/conveyor_belt_2.png\"), preload(\"res://Textures/conveyor_belt_3.png\"), preload(\"res://Textures/conveyor_belt_4.png\")],
-}
-
-var LOGO_TEXTURES: Dictionary = {
-	TILE_TYPE.MISSING: preload(\"res://Textures/missing_texture.png\"),
-	TILE_TYPE.NONE: preload(\"res://Textures/no_texture.png\"),
-	TILE_TYPE.BASIC_PATH: preload(\"res://Textures/basic_path_grass.png\"),
-	TILE_TYPE.CORNER_PATH: preload(\"res://Textures/corner_path_grass.png\"),
-	TILE_TYPE.CONVEYOR_BELT: preload(\"res://Textures/conveyor_belt_grass.png\"),
-}
-
-var CONNECTION_DIRECTIONS: Dictionary = {
-	TILE_TYPE.MISSING: [],
-	TILE_TYPE.NONE: [],
-	TILE_TYPE.BASIC_PATH: [0, 2],
-	TILE_TYPE.CORNER_PATH: [1, 2],
-	TILE_TYPE.CONVEYOR_BELT: [0, 2],
-}
-
-@export var DATA: Dictionary
-
-@export var selected_node: TextureButton = null
-@export var selected_direction: int = 0
-@export var selected_cell: TextureRect = null
-
-var shift_active: bool = false
-
-func _init():
-	DATA = {}
-	
-	for key in TEXTURES.keys():
-		DATA[key] = {
-			'texture': TEXTURES[key],
-			'logo': LOGO_TEXTURES[key],
-			'connections': CONNECTION_DIRECTIONS[key],
-		}
-
-func _ready():
-	# Enable input processing
-	set_process_input(true)
-
-func _input(event: InputEvent):
-	# Check if the event is a key press
-	if event is InputEventKey:
-		# Update shift_activate if SHIFT was pressed
-		if event.keycode == KEY_SHIFT:
-			self.shift_active = event.is_pressed()
-		
-		# Check if the R key was pressed
-		elif event.keycode == KEY_R and event.is_pressed():
-			process_rotation_press()
-
-func process_rotation_press():
-	# Decrease or increase the selected direction according to the state of the shift key
-	if self.shift_active:
-		self.selected_direction = (self.selected_direction - 1 + 4) % 4
-	else:
-		self.selected_direction = (self.selected_direction + 1) % 4
-
-	# Update the selected direction and recalculate the hovering
-	$Grid.update_direction(self.selected_direction)
-	$Grid.process_hover()
-
-func set_selected_node(node: TextureButton):
-	# Dehighlight old selected
-	if self.selected_node != null:
-		self.selected_node.dehighlight()
-
-	# Set and highlight the selected node if a different node was selected, then update the selected cell
-	if self.selected_node != node:
-		self.selected_node = node
-		self.selected_node.highlight()
-
-		$Grid.update_selected_cell(null)
-
-	# Reset the selected node if same node was selected again
-	else:
-		self.selected_node = null
-
-func get_selected_tile_type() -> int:
-	# Return the tile type of the selected node if one exists or return -1
-	var selected = self.selected_node
-	
-	if selected == null:
-		return -1
-
-	return selected.tile_type
-
-func set_selected_cell(cell: TextureRect):
-	# Get the info box nodes
-	var info_texture = $CanvasLayer/InfoBox/TexturePanel/MarginContainer/InfoTexture
-	var info_box = $CanvasLayer/InfoBox
-
-	# Select a cell if there is no selected cell or a different cell was selected
-	if self.selected_cell == null or cell == null or self.selected_cell.index != cell.index:
-		# Update the selected cell
-		self.selected_cell = cell
-
-		# Update the texture of the info box if a cell was selected that is not nothing or no texture
-		if cell != null and cell.tile_type > 0:
-			info_texture.texture = LOGO_TEXTURES[cell.tile_type]
-			info_box.visible = true
-		# Turn off the info box if the previous conditions were not met
-		else:
-			info_box.visible = false
-	# Deselect the cell and turn off the info box if the conditions were not met
-	else:
-		self.selected_cell = null
-		info_box.visible = false
-
-	# Recalculate the hovering
-	$Grid.process_hover()
-
-
-func sell_cell():
-	if selected_cell != null:
-		selected_cell.tile_type = TILE_TYPE.NONE
-		selected_cell.direction = 0
-		selected_cell.update_tile_texture()
-	
-	var info_box = $CanvasLayer/InfoBox
-	info_box.visible = false
-"
-
-[sub_resource type="GDScript" id="GDScript_f4l2y"]
-script/source = "extends Camera2D
-
-var right_mouse_is_down: bool = false
-var prev_coords: Vector2
-
-var MAX_ZOOM: Vector2 = Vector2(10, 10)
-var MIN_ZOOM: Vector2 = Vector2(0.5, 0.5)
-var ZOOM_FACTOR: float = 0.3
-var ZOOM_LOCK: Mutex = Mutex.new()
-var GRID: TextureRect
-
-func _ready():
-	# Initialise variables and turn on input processing
-	self.prev_coords = get_viewport().get_mouse_position()
-	GRID = get_node(\"/root/Level_1/Grid\")
-	set_process_input(true)
-
-
-func _process(delta: float):
-	# Get the current mouse position
-	var position: Vector2 = get_viewport().get_mouse_position()
-
-	# If the right mouse button is down, update the camera to the right offset and clamp the camera
-	if self.right_mouse_is_down:
-		self.translate((self.prev_coords - position) / self.zoom)
-		clamp_camera()
-
-	# Update the previous mouse coordinates
-	self.prev_coords = position
-
-func _input(event: InputEvent):
-	# Get the zoom lock to avoid zooming in or out too far
-	if event is InputEventMouseButton and ZOOM_LOCK.try_lock():
-		# Check which button was pressed and if the maximum or minimum zoom limit has been reached
-		if event.button_index == MOUSE_BUTTON_RIGHT:
-			# Update the right_mouse_is_down variable accordingly
-			self.right_mouse_is_down = event.pressed
-
-		elif event.button_index == MOUSE_BUTTON_WHEEL_UP and self.zoom * (1.0 + ZOOM_FACTOR) < MAX_ZOOM:
-			# Zoom in the camera and clamp it
-			self.zoom *= (1.0 + ZOOM_FACTOR)
-			self.position += (ZOOM_FACTOR * (get_global_mouse_position() - self.position))
-			clamp_camera()
-
-		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and self.zoom / (1.0 + ZOOM_FACTOR) > MIN_ZOOM:
-			# Zoom out the camera and clamp it
-			self.zoom /= (1.0 + ZOOM_FACTOR)
-			self.position -= (ZOOM_FACTOR / (1.0 + ZOOM_FACTOR) * (get_global_mouse_position() - self.position))
-			clamp_camera()
-
-		# Release the zoom lock
-		ZOOM_LOCK.unlock()
-
-func clamp_camera():
-	# Get the size of the cell grid and the viewport
-	var grid_rect: Rect2 = GRID.grid_rect
-	var viewport_rect: Rect2 = get_viewport_rect()
-
-	# Scale the viewport rect size accounting for the zoom factor
-	viewport_rect.size /= self.zoom
-	# Update the position of the camera such that the camera viewport is within the bounds of the grid rect
-	self.position = self.position.clamp(grid_rect.position + viewport_rect.size / 2, grid_rect.end - viewport_rect.size / 2)
-"
-
-[sub_resource type="GDScript" id="GDScript_5dxpy"]
-script/source = "extends TextureRect
-
-var GRID_SIZE: Vector2 = Vector2(25, 25)
-var HOVER_COLOR_ACCEPT: Color = Color(0.0, 0.7, 0.0)
-var HOVER_COLOR_REJECT: Color = Color(0.7, 0.0, 0.0)
-var HOVER_COLOR_NEUTRAL: Color = Color(0.9, 0.9, 0.9)
-var HOVER_COLOR_SELECTED: Color = Color(0.5, 0.5, 0.5)
-var HOVER_NONE: Color = Color(1.0, 1.0, 1.0)
-var CELL_SCALAR: Vector2 = Vector2(3, 3)
-var CELL_SIZE: Vector2 = Vector2(32, 32) * CELL_SCALAR
-
-var LEVEL_NODE: Node
-var CELL_SCENE: Resource = preload(\"res://Scenes/Cell.tscn\")
-var CELLS: Array[TextureRect] = []
-
-var SPAWNERS: Array[Vector2] = [Vector2(0, 0)]
-var GOALS: Array[Vector2] = [Vector2(10, 10)]
-
-var DATA: Dictionary
-
-var last_hover_index: int = 0
-var user_in_ui: bool = false
-var current_direction: int = 0
-
-@export var grid_rect: Rect2 = Rect2(Vector2(0, 0), GRID_SIZE * CELL_SIZE)
-
-
-func _ready():
-	# Initialise variables
-	LEVEL_NODE = get_node(\"/root/Level_1\")
-	DATA = LEVEL_NODE.DATA
-	
-	# Create the grass background
-	create_background()
-	
-	# Generate a grid of cells
-	create_grid()
-	
-	# Create the spawning places and goals
-	create_spawns_and_goals()
-	
-	# Set the size and offset for the direction indicator
-#	$DirectionIndicator.size = CELL_SIZE
-#	$DirectionIndicator.pivot_offset = CELL_SIZE / 2
-	
-	# Enable input processing
-	set_process_input(true)
-
-
-func create_background():
-	# Load the grass texture
-	var new_texture: Image = Image.load_from_file(\"res://Textures/grass.png\")
-	
-	# Update the cell size according to the size of the grass texture
-	CELL_SIZE = Vector2(new_texture.get_size()) * CELL_SCALAR
-	
-	# Resize the texture according to the new size with the scalar applied
-	new_texture.resize(CELL_SIZE.x, CELL_SIZE.y, Image.INTERPOLATE_NEAREST)
-	
-	# Set the background texture to the resized grass texture
-	self.texture = ImageTexture.create_from_image(new_texture)
-
-func create_grid():
-	# Update the size of the container according to the new CELL_SIZE
-	self.size = CELL_SIZE * GRID_SIZE
-	self.grid_rect = Rect2(Vector2(0, 0), CELL_SIZE * GRID_SIZE)
-	
-	# Create a cell for each coordinate
-	for y in range(GRID_SIZE.y):
-		for x in range(GRID_SIZE.x):
-			create_cell(x, y)
-
-func create_cell(x: int, y: int):
-	# Instantiate a cell
-	var cell: TextureRect = CELL_SCENE.instantiate()
-
-	# Set the fields of the cell
-	cell.position = Vector2(x, y) * CELL_SIZE
-	cell.size = CELL_SIZE
-	cell.pivot_offset = CELL_SIZE / 2
-	cell.index = CELLS.size()
-
-	# Add the cell to the CELLS list
-	CELLS.append(cell)
-
-	# Add the new cell to the tree
-	add_child(cell)
-
-func create_spawns_and_goals():
-	for spawn in SPAWNERS:
-		CELLS[calc_cell_index_from_position(spawn)].tile_type = 3
-
-func _input(event: InputEvent):
-	# If the user is in the UI remove any hovering effects and stop showing the direction indicator
-	if self.user_in_ui:
-		reset_modulation(self.last_hover_index)
-#		$DirectionIndicator.visible = false
-
-	# Calculate hovering if the mouse was moved
-	elif event is InputEventMouseMotion:
-		process_hover()
-
-	# Calculate cell interaction when the left mouse button is pressed
-	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
-		interact_cell()
-
-
-func process_hover():
-	# Get the mouse position
-	var position: Vector2 = get_global_mouse_position()
-
-	# If the mouse is within the cell grid set hover for its location
-	if self.grid_rect.has_point(position) and !user_in_ui:
-		# Hover over the index
-		var index: int = calc_cell_index_from_position(position)
-		set_hover(index)
-		# Update the location of the direction indicator
-#		$DirectionIndicator.position = floor(position / CELL_SIZE) * CELL_SIZE
-
-	# If the user was not in the grid remove any hovering effects and stop showing the direction indicator
-	else:
-		reset_modulation(self.last_hover_index)
-#		$DirectionIndicator.visible = false
-
-
-func set_hover(index: int):
-	# Reset the hovering of the previous cell if the user changed which cell they hover over
-	if self.last_hover_index != index:
-		reset_modulation(self.last_hover_index)
-
-	# Get which cell and tile type are selected
-	var selected_tile_type: int = get_selected_tile_type()
-	var selected_cell: TextureRect = get_selected_cell()
-
-	# If the hovered cell is the selected cell, set the cell's color to the selected cell color
-	if selected_cell != null and selected_cell.index == index:
-		CELLS[index].modulate = HOVER_COLOR_SELECTED
-
-	# If there is no tile type selected, set the cell's color to the neutral hovering color
-	elif selected_tile_type == -1:
-		CELLS[index].modulate = HOVER_COLOR_NEUTRAL
-
-	# If cell already has the selected tile type, set the cell's color to the rejected hovering color
-	elif get_tile_type(index) > 0:
-		CELLS[index].modulate = HOVER_COLOR_REJECT
-
-	# Otherwise, set the cell's color to the accepting hovering color
-	else:
-		CELLS[index].modulate = HOVER_COLOR_ACCEPT
-
-
-	# If a tile is selected display the selected tile type on the hovered cell with the current direction
-	if selected_tile_type != -1:
-		CELLS[index].set_tile_texture(DATA[selected_tile_type][\"texture\"])
-		CELLS[index].rotation = dir_to_rad(self.current_direction)
-		# Make the direction indicator visible
-#		$DirectionIndicator.visible = true
-
-	# Reset the texture and rotation of the cell if no tile is selected
-	else:
-		reset_texture(index)
-	
-	# Update the last hovered cell index
-	self.last_hover_index = index
-
-
-func interact_cell():
-	# Calculate which cell is being interacted with
-	var position: Vector2 = get_global_mouse_position()
-	var index: int = calc_cell_index_from_position(position)
-
-	# Check if the currect position is within the grid rect
-	if self.grid_rect.has_point(position) and !user_in_ui:
-		var selected_tile_type = get_selected_tile_type()
-		# If a tile is selected, try to place the tile
-
-		if selected_tile_type != -1:
-			try_place_tile(index, selected_tile_type)
-			update_selected_cell(null)
-
-		# If no tile was selected, update the selected cell
-		else:
-			update_selected_cell(CELLS[index])
-
-func try_place_tile(index: int, tile_type: int):
-	# Place a tile if the tile type of the cell is nothing or no texture
-	if CELLS[index].tile_type <= 0:
-		place_tile(index, tile_type)
-
-func place_tile(index: int, tile_type: int):
-	# Place a tile on the index of type tile_type in the current direction
-	set_tile_type(index, tile_type)
-	set_tile_direction(index, self.current_direction)
-
-func update_selected_cell(cell: TextureRect):
-	# Get the current selected cell
-	var currently_selected: TextureRect = get_selected_cell()
-	var old_index: int
-
-	# If a cell was selected, update the old_index variable to its index
-	if currently_selected != null:
-		old_index = currently_selected.index
-
-	# Update the selected cell
-	set_selected_cell(cell)
-
-	# Reset the appearance of the previously selected cell if there was one
-	if currently_selected != null:
-		reset_modulation(old_index)
-
-func update_direction(direction: int):
-	# Update the current direction and update the direction of the direction indicator
-	self.current_direction = direction
-#	$DirectionIndicator.rotation = dir_to_rad(direction)
-
-func reset_modulation(index: int):
-	# Get the selected cell
-	var selected_cell: TextureRect = get_selected_cell()
-
-	# Keep the cell color as the selected color if the cell that is being reset is the selected node
-	if selected_cell != null and selected_cell.index == index:
-		CELLS[index].modulate = HOVER_COLOR_SELECTED
-
-	# Otherwise, remove the hover effect
-	else:
-		CELLS[index].modulate = HOVER_NONE
-
-	# Reset the texture of the cell
-	reset_texture(index)
-
-func reset_texture(index: int):
-	# Set the texture and rotation of a cell back to its original values
-	CELLS[index].update_tile_texture()
-	CELLS[index].rotation = dir_to_rad(get_tile_direction(index))
-
-func calc_cell_index_from_position(position: Vector2) -> int:
-	# Calculate index in the grid from the cursor position
-	return floor(position.x / CELL_SIZE.x) + floor(position.y / CELL_SIZE.y) * GRID_SIZE.x
-
-func dir_to_rad(direction: int) -> float:
-	# Calculate the angle in radians from the direction integer
-	return direction * PI * 0.5
-
-
-func get_selected_tile_type() -> int:
-	return LEVEL_NODE.get_selected_tile_type()
-
-func set_selected_index(index: int):
-	set_selected_cell(CELLS[index])
-
-func set_selected_cell(cell: TextureRect):
-	LEVEL_NODE.set_selected_cell(cell)
-
-func get_selected_cell() -> TextureRect:
-	return LEVEL_NODE.selected_cell
-
-func get_tile_type(index: int) -> int:
-	return CELLS[index].tile_type
-
-func set_tile_type(index: int, tile_type: int):
-	CELLS[index].tile_type = tile_type
-
-func get_tile_direction(index: int) -> int:
-	return CELLS[index].direction
-
-func set_tile_direction(index: int, direction: int):
-	CELLS[index].direction = direction
-
-
-func _on_inside_control_update(in_ui: bool):
-	self.user_in_ui = in_ui
-"
-
-[sub_resource type="GDScript" id="GDScript_m7dln"]
-script/source = "extends GridContainer
-
-signal inside_control_update(in_ui: bool)
-
-var is_inside: bool = false
-
-func _process(delta: float):
-	# Check the mouse is within the control panel
-	var inside: bool = Rect2(self.position, self.size).has_point(get_global_mouse_position())
-
-	# Update the is_inside field if it is out of date
-	if self.is_inside != inside:
-
-		self.is_inside = inside
-		inside_control_update.emit(inside)
-"
-
-[sub_resource type="GDScript" id="GDScript_n3j51"]
-script/source = "extends TextureButton
-
-@export var tile_type: int = 0
-
-var PRESSED_COLOR: Color = Color(1, 1, 1)
-var UNPRESSED_COLOR: Color = Color(0.7, 0.7, 0.7)
-
-var LEVEL_NODE: Node
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	set_process_input(true)
-	set_modulate(UNPRESSED_COLOR)
-	LEVEL_NODE = get_node(\"/root/Level_1\")
-	self.texture_normal = LEVEL_NODE.DATA[tile_type][\"logo\"]
-
-
-func highlight():
-	self.modulate = PRESSED_COLOR
-
-func dehighlight():
-	self.modulate = UNPRESSED_COLOR
-
-
-func _on_pressed():
-	LEVEL_NODE.set_selected_node(self)
-"
-
-[sub_resource type="GDScript" id="GDScript_3g5ys"]
-script/source = "extends PanelContainer
-
-signal inside_control_update(in_ui: bool)
-
-var is_inside: bool = false
-
-func _process(delta: float):
-	# Check the mouse is within the control panel
-	var inside: bool = Rect2(self.position, self.size).has_point(get_global_mouse_position())
-
-	# Update the is_inside field if it is out of date
-	if self.is_inside != inside:
-
-		self.is_inside = inside
-		inside_control_update.emit(inside)
-"
+[ext_resource type="Script" path="res://Level_Scripts/info_box.gd" id="11_pm7rn"]
 
 [node name="Level_1" type="Node"]
-script = SubResource("GDScript_ocds3")
+script = ExtResource("1_7psmx")
 
 [node name="Camera" type="Camera2D" parent="."]
 position = Vector2(640, 360)
@@ -552,14 +22,14 @@ drag_left_margin = 0.0
 drag_top_margin = 0.0
 drag_right_margin = 0.0
 drag_bottom_margin = 0.0
-script = SubResource("GDScript_f4l2y")
+script = ExtResource("2_4kfdt")
 
 [node name="Grid" type="TextureRect" parent="."]
 texture_filter = 1
 texture_repeat = 2
 texture = ExtResource("3_bvl1p")
 stretch_mode = 1
-script = SubResource("GDScript_5dxpy")
+script = ExtResource("4_ut40f")
 
 [node name="DirectionIndicator" type="TextureRect" parent="Grid"]
 visible = false
@@ -578,7 +48,7 @@ offset_top = 590.0
 offset_right = 1260.0
 offset_bottom = 700.0
 columns = 2
-script = SubResource("GDScript_m7dln")
+script = ExtResource("6_ibcbb")
 metadata/_edit_use_anchors_ = true
 
 [node name="BasicPath" type="TextureButton" parent="CanvasLayer/ControlPanel"]
@@ -589,7 +59,7 @@ size_flags_vertical = 3
 tooltip_text = "Create a basic road"
 texture_normal = ExtResource("7_i4af0")
 stretch_mode = 4
-script = SubResource("GDScript_n3j51")
+script = ExtResource("8_aj175")
 tile_type = 1
 
 [node name="CornerPath" type="TextureButton" parent="CanvasLayer/ControlPanel"]
@@ -600,7 +70,7 @@ size_flags_vertical = 3
 tooltip_text = "Create a basic road"
 texture_normal = ExtResource("9_l5nnu")
 stretch_mode = 4
-script = SubResource("GDScript_n3j51")
+script = ExtResource("8_aj175")
 tile_type = 2
 
 [node name="ConveyorBelt" type="TextureButton" parent="CanvasLayer/ControlPanel"]
@@ -611,7 +81,7 @@ size_flags_vertical = 3
 tooltip_text = "Create a conveyor belt"
 texture_normal = ExtResource("10_m7jg6")
 stretch_mode = 4
-script = SubResource("GDScript_n3j51")
+script = ExtResource("8_aj175")
 tile_type = 3
 
 [node name="Button" type="Button" parent="CanvasLayer/ControlPanel"]
@@ -627,7 +97,7 @@ offset_left = -276.0
 offset_bottom = 573.0
 grow_horizontal = 0
 size_flags_horizontal = 3
-script = SubResource("GDScript_3g5ys")
+script = ExtResource("11_pm7rn")
 
 [node name="TexturePanel" type="Panel" parent="CanvasLayer/InfoBox"]
 layout_mode = 2
