@@ -1,6 +1,8 @@
 extends Node
 
 var TEXTURES: Dictionary = {
+	TILE_TYPE.GOAL: [preload("res://Textures/goal.png")],
+	TILE_TYPE.SPAWNER: [preload("res://Textures/spawner.png")],
 	TILE_TYPE.MISSING: [preload("res://Textures/missing_texture.png")],
 	TILE_TYPE.NONE: [preload("res://Textures/no_texture.png")],
 	TILE_TYPE.BASIC_PATH: [preload("res://Textures/basic_path.png")],
@@ -9,6 +11,8 @@ var TEXTURES: Dictionary = {
 }
 
 var LOGO_TEXTURES: Dictionary = {
+	TILE_TYPE.GOAL: preload("res://Textures/goal_grass.png"),
+	TILE_TYPE.SPAWNER: preload("res://Textures/spawner_grass.png"),
 	TILE_TYPE.MISSING: preload("res://Textures/missing_texture.png"),
 	TILE_TYPE.NONE: preload("res://Textures/no_texture.png"),
 	TILE_TYPE.BASIC_PATH: preload("res://Textures/basic_path_grass.png"),
@@ -17,12 +21,20 @@ var LOGO_TEXTURES: Dictionary = {
 }
 
 var CONNECTION_DIRECTIONS: Dictionary = {
+	TILE_TYPE.GOAL: [0, 1, 2, 3],
+	TILE_TYPE.SPAWNER: [1],
 	TILE_TYPE.MISSING: [],
 	TILE_TYPE.NONE: [],
 	TILE_TYPE.BASIC_PATH: [0, 2],
 	TILE_TYPE.CORNER_PATH: [1, 2],
 	TILE_TYPE.CONVEYOR_BELT: [0, 2],
 }
+
+@export var PLACEABLE_TILES: Array = [
+	TILE_TYPE.BASIC_PATH,
+	TILE_TYPE.CORNER_PATH,
+	TILE_TYPE.CONVEYOR_BELT,
+]
 
 @export var DATA: Dictionary
 
@@ -85,11 +97,11 @@ func set_selected_node(node: TextureButton):
 		self.selected_node = null
 
 func get_selected_tile_type() -> int:
-	# Return the tile type of the selected node if one exists or return -1
+	# Return the tile type of the selected node if one exists or return TILE_TYPE.NONE
 	var selected = self.selected_node
 	
 	if selected == null:
-		return -1
+		return TILE_TYPE.NONE
 
 	return selected.tile_type
 
@@ -104,7 +116,7 @@ func set_selected_cell(cell: TextureRect):
 		self.selected_cell = cell
 
 		# Update the texture of the info box if a cell was selected that is not nothing or no texture
-		if cell != null and cell.tile_type > 0:
+		if cell != null and cell.tile_type > TILE_TYPE.NONE:
 			info_texture.texture = LOGO_TEXTURES[cell.tile_type]
 			info_box.visible = true
 		# Turn off the info box if the previous conditions were not met

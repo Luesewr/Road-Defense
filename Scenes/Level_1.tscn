@@ -84,7 +84,7 @@ stretch_mode = 4
 script = ExtResource("8_aj175")
 tile_type = 3
 
-[node name="Button" type="Button" parent="CanvasLayer/ControlPanel"]
+[node name="PlayButton" type="Button" parent="CanvasLayer/ControlPanel"]
 layout_mode = 2
 text = "Play"
 
@@ -132,5 +132,6 @@ text = "Sell"
 [connection signal="pressed" from="CanvasLayer/ControlPanel/BasicPath" to="CanvasLayer/ControlPanel/BasicPath" method="_on_pressed"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/CornerPath" to="CanvasLayer/ControlPanel/CornerPath" method="_on_pressed"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/ConveyorBelt" to="CanvasLayer/ControlPanel/ConveyorBelt" method="_on_pressed"]
+[connection signal="pressed" from="CanvasLayer/ControlPanel/PlayButton" to="Grid" method="_on_play"]
 [connection signal="inside_control_update" from="CanvasLayer/InfoBox" to="Grid" method="_on_inside_control_update"]
 [connection signal="pressed" from="CanvasLayer/InfoBox/SellButton" to="." method="sell_cell"]

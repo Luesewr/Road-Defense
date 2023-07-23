@@ -4,7 +4,7 @@ signal inside_control_update(in_ui: bool)
 
 var is_inside: bool = false
 
-func _process(delta: float):
+func _process(_delta: float):
 	# Check the mouse is within the control panel
 	var inside: bool = Rect2(self.position, self.size).has_point(get_global_mouse_position())
 

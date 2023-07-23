@@ -16,17 +16,17 @@ func _ready():
 	set_process_input(true)
 
 
-func _process(delta: float):
+func _process(_delta: float):
 	# Get the current mouse position
-	var position: Vector2 = get_viewport().get_mouse_position()
+	var pos: Vector2 = get_viewport().get_mouse_position()
 
 	# If the right mouse button is down, update the camera to the right offset and clamp the camera
 	if self.right_mouse_is_down:
-		self.translate((self.prev_coords - position) / self.zoom)
+		self.translate((self.prev_coords - pos) / self.zoom)
 		clamp_camera()
 
 	# Update the previous mouse coordinates
-	self.prev_coords = position
+	self.prev_coords = pos
 
 func _input(event: InputEvent):
 	# Get the zoom lock to avoid zooming in or out too far

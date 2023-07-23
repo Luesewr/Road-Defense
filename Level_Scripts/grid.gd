@@ -1,20 +1,20 @@
 extends TextureRect
 
-var GRID_SIZE: Vector2 = Vector2(25, 25)
+var GRID_SIZE: Vector2i = Vector2i(25, 25)
 var HOVER_COLOR_ACCEPT: Color = Color(0.0, 0.7, 0.0)
 var HOVER_COLOR_REJECT: Color = Color(0.7, 0.0, 0.0)
 var HOVER_COLOR_NEUTRAL: Color = Color(0.9, 0.9, 0.9)
 var HOVER_COLOR_SELECTED: Color = Color(0.5, 0.5, 0.5)
 var HOVER_NONE: Color = Color(1.0, 1.0, 1.0)
-var CELL_SCALAR: Vector2 = Vector2(3, 3)
-var CELL_SIZE: Vector2 = Vector2(32, 32) * CELL_SCALAR
+var CELL_SCALAR: Vector2i = Vector2i(3, 3)
+var CELL_SIZE: Vector2i = Vector2i(32, 32) * CELL_SCALAR
 
 var LEVEL_NODE: Node
 var CELL_SCENE: Resource = preload("res://Scenes/Cell.tscn")
 var CELLS: Array[TextureRect] = []
 
-var SPAWNERS: Array[Vector2] = [Vector2(0, 0)]
-var GOALS: Array[Vector2] = [Vector2(10, 10)]
+var SPAWNERS: Array[Vector2i] = [Vector2i(0, 0)]
+var GOALS: Array[Vector2i] = [Vector2i(10, 10)]
 
 var DATA: Dictionary
 
@@ -49,13 +49,13 @@ func _ready():
 
 func create_background():
 	# Load the grass texture
-	var new_texture: Image = Image.load_from_file("res://Textures/grass.png")
+	var new_texture: Image = load("res://Textures/grass.png").get_image()
 	
 	# Update the cell size according to the size of the grass texture
-	CELL_SIZE = Vector2(new_texture.get_size()) * CELL_SCALAR
+	CELL_SIZE = Vector2i(new_texture.get_size()) * CELL_SCALAR
 	
 	# Resize the texture according to the new size with the scalar applied
-	new_texture.resize(CELL_SIZE.x, CELL_SIZE.y, Image.INTERPOLATE_NEAREST)
+	new_texture.resize(int(CELL_SIZE.x), int(CELL_SIZE.y), Image.INTERPOLATE_NEAREST)
 	
 	# Set the background texture to the resized grass texture
 	self.texture = ImageTexture.create_from_image(new_texture)
@@ -75,7 +75,7 @@ func create_cell(x: int, y: int):
 	var cell: TextureRect = CELL_SCENE.instantiate()
 
 	# Set the fields of the cell
-	cell.position = Vector2(x, y) * CELL_SIZE
+	cell.position = Vector2i(x, y) * CELL_SIZE
 	cell.size = CELL_SIZE
 	cell.pivot_offset = CELL_SIZE / 2
 	cell.index = CELLS.size()
@@ -88,7 +88,14 @@ func create_cell(x: int, y: int):
 
 func create_spawns_and_goals():
 	for spawn in SPAWNERS:
-		CELLS[calc_cell_index_from_position(spawn)].tile_type = 3
+		var index: int = calc_cell_index_from_cell_position(spawn)
+		CELLS[index].tile_type = TILE_TYPE.SPAWNER
+		CELLS[index].update_tile_texture()
+	
+	for goal in GOALS:
+		var index: int = calc_cell_index_from_cell_position(goal)
+		CELLS[index].tile_type = TILE_TYPE.GOAL
+		CELLS[index].update_tile_texture()
 
 func _input(event: InputEvent):
 	# If the user is in the UI remove any hovering effects and stop showing the direction indicator
@@ -107,15 +114,15 @@ func _input(event: InputEvent):
 
 func process_hover():
 	# Get the mouse position
-	var position: Vector2 = get_global_mouse_position()
+	var pos: Vector2 = get_global_mouse_position()
 
 	# If the mouse is within the cell grid set hover for its location
-	if self.grid_rect.has_point(position) and !user_in_ui:
+	if self.grid_rect.has_point(pos) and !user_in_ui:
 		# Hover over the index
-		var index: int = calc_cell_index_from_position(position)
+		var index: int = calc_cell_index_from_position(pos)
 		set_hover(index)
 		# Update the location of the direction indicator
-#		$DirectionIndicator.position = floor(position / CELL_SIZE) * CELL_SIZE
+#		$DirectionIndicator.position = floor(pos / CELL_SIZE) * CELL_SIZE
 
 	# If the user was not in the grid remove any hovering effects and stop showing the direction indicator
 	else:
@@ -137,11 +144,11 @@ func set_hover(index: int):
 		CELLS[index].modulate = HOVER_COLOR_SELECTED
 
 	# If there is no tile type selected, set the cell's color to the neutral hovering color
-	elif selected_tile_type == -1:
+	elif selected_tile_type == TILE_TYPE.NONE:
 		CELLS[index].modulate = HOVER_COLOR_NEUTRAL
 
 	# If cell already has the selected tile type, set the cell's color to the rejected hovering color
-	elif get_tile_type(index) > 0:
+	elif get_tile_type(index) != TILE_TYPE.NONE:
 		CELLS[index].modulate = HOVER_COLOR_REJECT
 
 	# Otherwise, set the cell's color to the accepting hovering color
@@ -150,7 +157,7 @@ func set_hover(index: int):
 
 
 	# If a tile is selected display the selected tile type on the hovered cell with the current direction
-	if selected_tile_type != -1:
+	if selected_tile_type != TILE_TYPE.NONE:
 		CELLS[index].set_tile_texture(DATA[selected_tile_type]["texture"])
 		CELLS[index].rotation = dir_to_rad(self.current_direction)
 		# Make the direction indicator visible
@@ -166,25 +173,29 @@ func set_hover(index: int):
 
 func interact_cell():
 	# Calculate which cell is being interacted with
-	var position: Vector2 = get_global_mouse_position()
-	var index: int = calc_cell_index_from_position(position)
+	var pos: Vector2 = get_global_mouse_position()
+	var index: int = calc_cell_index_from_position(pos)
 
 	# Check if the currect position is within the grid rect
-	if self.grid_rect.has_point(position) and !user_in_ui:
-		var selected_tile_type = get_selected_tile_type()
+	if self.grid_rect.has_point(pos) and !user_in_ui:
+		var selected_tile_type: int = get_selected_tile_type()
 		# If a tile is selected, try to place the tile
 
-		if selected_tile_type != -1:
+		if selected_tile_type != TILE_TYPE.NONE:
 			try_place_tile(index, selected_tile_type)
 			update_selected_cell(null)
 
 		# If no tile was selected, update the selected cell
-		else:
+		elif selected_tile_type == TILE_TYPE.NONE and get_tile_type(index) in LEVEL_NODE.PLACEABLE_TILES:
 			update_selected_cell(CELLS[index])
+
+
+func connect_paths():
+	print("hey")
 
 func try_place_tile(index: int, tile_type: int):
 	# Place a tile if the tile type of the cell is nothing or no texture
-	if CELLS[index].tile_type <= 0:
+	if CELLS[index].tile_type == TILE_TYPE.NONE:
 		place_tile(index, tile_type)
 
 func place_tile(index: int, tile_type: int):
@@ -233,9 +244,13 @@ func reset_texture(index: int):
 	CELLS[index].update_tile_texture()
 	CELLS[index].rotation = dir_to_rad(get_tile_direction(index))
 
-func calc_cell_index_from_position(position: Vector2) -> int:
+func calc_cell_index_from_position(pos: Vector2) -> int:
 	# Calculate index in the grid from the cursor position
-	return floor(position.x / CELL_SIZE.x) + floor(position.y / CELL_SIZE.y) * GRID_SIZE.x
+#	return floor(pos.x / CELL_SIZE.x) + floor(pos.y / CELL_SIZE.y) * GRID_SIZE.x
+	return calc_cell_index_from_cell_position(Vector2i(floor(pos / Vector2(CELL_SIZE))))
+
+func calc_cell_index_from_cell_position(pos: Vector2i) -> int:
+	return pos.x + pos.y * int(GRID_SIZE.x)
 
 func dir_to_rad(direction: int) -> float:
 	# Calculate the angle in radians from the direction integer
@@ -269,3 +284,6 @@ func set_tile_direction(index: int, direction: int):
 
 func _on_inside_control_update(in_ui: bool):
 	self.user_in_ui = in_ui
+
+func _on_play():
+	connect_paths()

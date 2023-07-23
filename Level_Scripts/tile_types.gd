@@ -5,4 +5,6 @@ enum {
 	CORNER_PATH,
 	CONVEYOR_BELT,
 	MISSING = -1,
+	SPAWNER = -2,
+	GOAL = -3,
 }
