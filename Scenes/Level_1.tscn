@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://duovl5rl0w5fa"]
+[gd_scene load_steps=13 format=3 uid="uid://duovl5rl0w5fa"]
 
 [ext_resource type="Script" path="res://Level_Scripts/root_logic.gd" id="1_7psmx"]
 [ext_resource type="Script" path="res://Level_Scripts/camera.gd" id="2_4kfdt"]
@@ -11,6 +11,11 @@
 [ext_resource type="Texture2D" uid="uid://b1h285cr65wpq" path="res://Textures/corner_path_grass.png" id="9_l5nnu"]
 [ext_resource type="Texture2D" uid="uid://b6u0a3h31njar" path="res://Textures/conveyor_belt_grass.png" id="10_m7jg6"]
 [ext_resource type="Script" path="res://Level_Scripts/info_box.gd" id="11_pm7rn"]
+
+[sub_resource type="GDScript" id="GDScript_ttmpy"]
+script/source = "extends Button
+
+"
 
 [node name="Level_1" type="Node"]
 script = ExtResource("1_7psmx")
@@ -87,6 +92,8 @@ tile_type = 3
 [node name="PlayButton" type="Button" parent="CanvasLayer/ControlPanel"]
 layout_mode = 2
 text = "Play"
+script = SubResource("GDScript_ttmpy")
+metadata/play_button = false
 
 [node name="InfoBox" type="PanelContainer" parent="CanvasLayer"]
 visible = false

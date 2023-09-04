@@ -4,6 +4,8 @@ extends TextureRect
 @export var tile_type: int = TILE_TYPE.NONE
 @export var direction: int = 0
 @export var textures: Array
+@export var path_neighbours: Array = []
+@export var grid_position: Vector2i
 
 var LEVEL_NODE: Node
 

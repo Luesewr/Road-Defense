@@ -14,7 +14,7 @@ var CELL_SCENE: Resource = preload("res://Scenes/Cell.tscn")
 var CELLS: Array[TextureRect] = []
 
 var SPAWNERS: Array[Vector2i] = [Vector2i(0, 0)]
-var GOALS: Array[Vector2i] = [Vector2i(10, 10)]
+var GOALS: Array[Vector2i] = [Vector2i(5, 5)]
 
 var DATA: Dictionary
 
@@ -79,6 +79,7 @@ func create_cell(x: int, y: int):
 	cell.size = CELL_SIZE
 	cell.pivot_offset = CELL_SIZE / 2
 	cell.index = CELLS.size()
+	cell.grid_position = Vector2i(x, y)
 
 	# Add the cell to the CELLS list
 	CELLS.append(cell)
@@ -191,7 +192,102 @@ func interact_cell():
 
 
 func connect_paths():
-	print("hey")
+	var valid: bool = true
+	
+	for goal in GOALS:
+		var goal_index: int = calc_cell_index_from_cell_position(goal)
+		var goal_cell: TextureRect = CELLS[goal_index]
+		
+		var stack: Array[StackElement] = [StackElement.new(goal_cell, null)]
+		
+		var found_spawner: bool = false
+		
+		while valid && stack.size() > 0:
+			var current_element: StackElement = stack.pop_back()
+			var current: TextureRect = current_element.current
+			
+			var current_visited: VisitedNode = current_element.visited
+			
+			var new_visited: VisitedNode = VisitedNode.new(current, current_visited)
+			
+			for spawner in SPAWNERS:
+				if spawner == current.grid_position:
+					found_spawner = true
+					new_visited.add_neighbours()
+					break
+			
+			for direction in DATA[current.tile_type]['connections']:
+				var adjusted_direction: int = (direction + current.direction) % 4
+				var x: int = current.grid_position.x + ((1 if adjusted_direction % 2 == 1 else 0) * (1 if adjusted_direction < 2 else -1))
+				var y: int = current.grid_position.y + ((1 if adjusted_direction % 2 == 0 else 0) * (1 if adjusted_direction > 1 else -1))
+				var neighbour_location: Vector2i = Vector2i(x, y)
+				
+				if x < 0 or x >= GRID_SIZE.x or y < 0 or y >= GRID_SIZE.y:
+					valid = false
+					break
+				
+				var neighbour: TextureRect = CELLS[calc_cell_index_from_cell_position(neighbour_location)]
+				
+				if neighbour.tile_type not in LEVEL_NODE.VALID_TILES:
+					valid = false
+					break
+				
+				if current_visited != null and current_visited.contains(neighbour):
+					continue
+				
+				stack.push_back(StackElement.new(neighbour, new_visited))
+				
+		if !found_spawner:
+			valid = false
+			
+	if valid:
+		for spawner in SPAWNERS:
+			if CELLS[calc_cell_index_from_cell_position(spawner)].path_neighbours.size() == 0:
+				valid = false
+				break
+	
+	print("valid" if valid else "not valid")
+
+class VisitedNode:
+	var cell: TextureRect
+	var next_node: VisitedNode
+	
+	func _init(cell: TextureRect, next: VisitedNode):
+		self.cell = cell
+		self.next_node = next
+	
+	func contains(element: TextureRect):
+		if self.cell == element:
+			return true
+		
+		if self.next_node != null:
+			return self.next_node.contains(element)
+		else:
+			return false
+	
+	func head():
+		return self.cell
+	
+	func tail():
+		if self.next_node == null:
+			return self.cell
+		
+		return self.next_node.tail()
+	
+	func add_neighbours():
+		if self.next_node == null:
+			return
+		
+		if !self.cell.path_neighbours.has(self.next_node):
+			self.cell.path_neighbours.push_back(self.next_node)
+
+class StackElement:
+	var visited: VisitedNode
+	var current: TextureRect
+	
+	func _init(current: TextureRect, visited: VisitedNode):
+		self.current = current
+		self.visited = visited
 
 func try_place_tile(index: int, tile_type: int):
 	# Place a tile if the tile type of the cell is nothing or no texture
