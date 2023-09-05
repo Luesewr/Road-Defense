@@ -7,6 +7,7 @@ var TEXTURES: Dictionary = {
 	TILE_TYPE.NONE: [preload("res://Textures/no_texture.png")],
 	TILE_TYPE.BASIC_PATH: [preload("res://Textures/basic_path.png")],
 	TILE_TYPE.CORNER_PATH: [preload("res://Textures/corner_path.png")],
+	TILE_TYPE.CROSS_PATH: [preload("res://Textures/cross_path.png")],
 	TILE_TYPE.CONVEYOR_BELT: [preload("res://Textures/conveyor_belt.png"), preload("res://Textures/conveyor_belt_2.png"), preload("res://Textures/conveyor_belt_3.png"), preload("res://Textures/conveyor_belt_4.png")],
 }
 
@@ -17,6 +18,7 @@ var LOGO_TEXTURES: Dictionary = {
 	TILE_TYPE.NONE: preload("res://Textures/no_texture.png"),
 	TILE_TYPE.BASIC_PATH: preload("res://Textures/basic_path_grass.png"),
 	TILE_TYPE.CORNER_PATH: preload("res://Textures/corner_path_grass.png"),
+	TILE_TYPE.CROSS_PATH: preload("res://Textures/cross_path_grass.png"),
 	TILE_TYPE.CONVEYOR_BELT: preload("res://Textures/conveyor_belt_grass.png"),
 }
 
@@ -27,12 +29,14 @@ var CONNECTION_DIRECTIONS: Dictionary = {
 	TILE_TYPE.NONE: [],
 	TILE_TYPE.BASIC_PATH: [0, 2],
 	TILE_TYPE.CORNER_PATH: [1, 2],
+	TILE_TYPE.CROSS_PATH: [0, 1, 2, 3],
 	TILE_TYPE.CONVEYOR_BELT: [0, 2],
 }
 
 @export var PLACEABLE_TILES: Array = [
 	TILE_TYPE.BASIC_PATH,
 	TILE_TYPE.CORNER_PATH,
+	TILE_TYPE.CROSS_PATH,
 	TILE_TYPE.CONVEYOR_BELT,
 ]
 
@@ -41,6 +45,7 @@ var CONNECTION_DIRECTIONS: Dictionary = {
 	TILE_TYPE.SPAWNER,
 	TILE_TYPE.BASIC_PATH,
 	TILE_TYPE.CORNER_PATH,
+	TILE_TYPE.CROSS_PATH,
 	TILE_TYPE.CONVEYOR_BELT,
 ]
 
