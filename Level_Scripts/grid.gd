@@ -11,6 +11,7 @@ var CELL_SIZE: Vector2i = Vector2i(32, 32) * CELL_SCALAR
 
 var LEVEL_NODE: Node
 var CELL_SCENE: Resource = preload("res://Scenes/Cell.tscn")
+var ENEMY_SCENE: Resource = preload("res://Scenes/Enemy.tscn")
 var CELLS: Array[TextureRect] = []
 
 var SPAWNERS: Array[Vector2i] = [Vector2i(0, 0)]
@@ -246,7 +247,17 @@ func connect_paths():
 				valid = false
 				break
 	
-	print("valid" if valid else "not valid")
+#	print("valid" if valid else "not valid")
+	if !valid:
+		return
+
+	for spawner in SPAWNERS:
+		var enemy: TextureRect = ENEMY_SCENE.instantiate()
+		enemy.position = spawner
+		enemy.size = CELL_SIZE
+		add_child(enemy)
+		var spawner_cell = CELLS[calc_cell_index_from_cell_position(spawner)]
+		enemy.follow_path(spawner_cell)
 
 class VisitedNode:
 	var cell: TextureRect
@@ -277,9 +288,10 @@ class VisitedNode:
 	func add_neighbours():
 		if self.next_node == null:
 			return
-		
-		if !self.cell.path_neighbours.has(self.next_node):
-			self.cell.path_neighbours.push_back(self.next_node)
+		if !self.cell.path_neighbours.has(self.next_node.cell):
+			self.cell.path_neighbours.push_back(self.next_node.cell)
+			
+		self.next_node.add_neighbours()
 
 class StackElement:
 	var visited: VisitedNode

@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://yv3q6s7eecyo"]
+
+[ext_resource type="Texture2D" uid="uid://dw8wy8d8bqf" path="res://Textures/missing_texture.png" id="1_xc6qg"]
+[ext_resource type="Script" path="res://Level_Scripts/enemy.gd" id="2_6i17r"]
+
+[node name="Enemy" type="TextureRect"]
+process_mode = 4
+z_index = 1
+texture = ExtResource("1_xc6qg")
+stretch_mode = 4
+script = ExtResource("2_6i17r")
