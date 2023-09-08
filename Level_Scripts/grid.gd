@@ -14,8 +14,8 @@ var CELL_SCENE: Resource = preload("res://Scenes/Cell.tscn")
 var ENEMY_SCENE: Resource = preload("res://Scenes/Enemy.tscn")
 var CELLS: Array[TextureRect] = []
 
-var SPAWNERS: Array[Vector2i] = [Vector2i(0, 0)]
-var GOALS: Array[Vector2i] = [Vector2i(5, 5)]
+var SPAWNERS: Array[Vector3i] = [Vector3i(0, 0, 0), Vector3i(10, 7, 3), Vector3i(0, 7, 0)]
+var GOALS: Array[Vector3i] = [Vector3i(5, 5, 0)]
 
 var DATA: Dictionary
 
@@ -90,13 +90,17 @@ func create_cell(x: int, y: int):
 
 func create_spawns_and_goals():
 	for spawn in SPAWNERS:
-		var index: int = calc_cell_index_from_cell_position(spawn)
+		var index: int = calc_cell_index_from_cell_position(Vector2i(spawn.x, spawn.y))
 		CELLS[index].tile_type = TILE_TYPE.SPAWNER
+		CELLS[index].rotation = dir_to_rad(spawn.z)
+		CELLS[index].direction = spawn.z
 		CELLS[index].update_tile_texture()
 	
 	for goal in GOALS:
-		var index: int = calc_cell_index_from_cell_position(goal)
+		var index: int = calc_cell_index_from_cell_position(Vector2i(goal.x, goal.y))
 		CELLS[index].tile_type = TILE_TYPE.GOAL
+		CELLS[index].rotation = dir_to_rad(goal.z)
+		CELLS[index].direction = goal.z
 		CELLS[index].update_tile_texture()
 
 func _input(event: InputEvent):
@@ -194,14 +198,16 @@ func interact_cell():
 
 func connect_paths():
 	var valid: bool = true
+	var completed_tracks = 0
 	
 	for goal in GOALS:
-		var goal_index: int = calc_cell_index_from_cell_position(goal)
+		var goal_index: int = calc_cell_index_from_cell_position(Vector2i(goal.x, goal.y))
 		var goal_cell: TextureRect = CELLS[goal_index]
 		
 		var stack: Array[StackElement] = [StackElement.new(goal_cell, null)]
 		
 		var found_spawner: bool = false
+		
 		
 		while valid && stack.size() > 0:
 			var current_element: StackElement = stack.pop_back()
@@ -215,6 +221,7 @@ func connect_paths():
 				if spawner == current.grid_position:
 					found_spawner = true
 					new_visited.add_neighbours()
+					completed_tracks += 1
 					break
 			
 			for direction in DATA[current.tile_type]['connections']:
@@ -240,24 +247,17 @@ func connect_paths():
 				
 		if !found_spawner:
 			valid = false
+	print(completed_tracks)
 			
 	if valid:
 		for spawner in SPAWNERS:
-			if CELLS[calc_cell_index_from_cell_position(spawner)].path_neighbours.size() == 0:
+			if CELLS[calc_cell_index_from_cell_position(Vector2i(spawner.x, spawner.y))].path_neighbours.size() == 0:
 				valid = false
 				break
 	
-#	print("valid" if valid else "not valid")
+	print("valid" if valid else "not valid")
 	if !valid:
 		return
-
-	for spawner in SPAWNERS:
-		var enemy: TextureRect = ENEMY_SCENE.instantiate()
-		enemy.position = spawner
-		enemy.size = CELL_SIZE
-		add_child(enemy)
-		var spawner_cell = CELLS[calc_cell_index_from_cell_position(spawner)]
-		enemy.follow_path(spawner_cell)
 
 class VisitedNode:
 	var cell: TextureRect
@@ -300,6 +300,16 @@ class StackElement:
 	func _init(current: TextureRect, visited: VisitedNode):
 		self.current = current
 		self.visited = visited
+
+
+func spawn_enemies():
+	for spawner in SPAWNERS:
+		var enemy: TextureRect = ENEMY_SCENE.instantiate()
+		enemy.position = Vector2i(spawner.x, spawner.y)
+		enemy.size = CELL_SIZE
+		add_child(enemy)
+		var spawner_cell = CELLS[calc_cell_index_from_cell_position(Vector2i(spawner.x, spawner.y))]
+		enemy.follow_path(spawner_cell)
 
 func try_place_tile(index: int, tile_type: int):
 	# Place a tile if the tile type of the cell is nothing or no texture
@@ -395,3 +405,7 @@ func _on_inside_control_update(in_ui: bool):
 
 func _on_play():
 	connect_paths()
+
+
+func _on_spawn():
+	spawn_enemies()

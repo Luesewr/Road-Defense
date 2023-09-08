@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://duovl5rl0w5fa"]
+[gd_scene load_steps=13 format=3 uid="uid://duovl5rl0w5fa"]
 
 [ext_resource type="Script" path="res://Level_Scripts/root_logic.gd" id="1_7psmx"]
 [ext_resource type="Script" path="res://Level_Scripts/camera.gd" id="2_4kfdt"]
@@ -12,11 +12,6 @@
 [ext_resource type="Texture2D" uid="uid://usawgx52o36c" path="res://Textures/cross_path_grass.png" id="10_fwojd"]
 [ext_resource type="Texture2D" uid="uid://b6u0a3h31njar" path="res://Textures/conveyor_belt_grass.png" id="10_m7jg6"]
 [ext_resource type="Script" path="res://Level_Scripts/info_box.gd" id="11_pm7rn"]
-
-[sub_resource type="GDScript" id="GDScript_ttmpy"]
-script/source = "extends Button
-
-"
 
 [node name="Level_1" type="Node"]
 script = ExtResource("1_7psmx")
@@ -104,7 +99,11 @@ tile_type = 4
 [node name="PlayButton" type="Button" parent="CanvasLayer/ControlPanel"]
 layout_mode = 2
 text = "Play"
-script = SubResource("GDScript_ttmpy")
+metadata/play_button = false
+
+[node name="SpawnButton" type="Button" parent="CanvasLayer/ControlPanel"]
+layout_mode = 2
+text = "Spawn"
 metadata/play_button = false
 
 [node name="InfoBox" type="PanelContainer" parent="CanvasLayer"]
@@ -153,5 +152,6 @@ text = "Sell"
 [connection signal="pressed" from="CanvasLayer/ControlPanel/CrossPath" to="CanvasLayer/ControlPanel/CrossPath" method="_on_pressed"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/ConveyorBelt" to="CanvasLayer/ControlPanel/ConveyorBelt" method="_on_pressed"]
 [connection signal="pressed" from="CanvasLayer/ControlPanel/PlayButton" to="Grid" method="_on_play"]
+[connection signal="pressed" from="CanvasLayer/ControlPanel/SpawnButton" to="Grid" method="_on_spawn"]
 [connection signal="inside_control_update" from="CanvasLayer/InfoBox" to="Grid" method="_on_inside_control_update"]
 [connection signal="pressed" from="CanvasLayer/InfoBox/SellButton" to="." method="sell_cell"]

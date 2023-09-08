@@ -1,10 +1,11 @@
 extends TextureRect
 
-var goal_cell
+var goal_cell: TextureRect
 var current_time: float = 0.0
+var start_cell: TextureRect
 var start_position: Vector2 = Vector2(0, 0)
 var target_position: Vector2 = Vector2(0, 0)
-var move_duration = 0.5
+var move_duration: float = 0.5
 
 
 func _process(delta):
@@ -22,7 +23,12 @@ func _process(delta):
 		if goal_cell.path_neighbours.size() == 0:
 			queue_free()
 		else:
-			goal_cell = goal_cell.path_neighbours[randi() % goal_cell.path_neighbours.size()]
+			var filtered_neighbours = []
+			for neighbour in goal_cell.path_neighbours:
+				if neighbour != start_cell:
+					filtered_neighbours.append(neighbour)
+			start_cell = goal_cell
+			goal_cell = filtered_neighbours[randi() % filtered_neighbours.size()]
 			start_position = self.position
 			target_position = goal_cell.position
 			current_time = 0
@@ -30,6 +36,7 @@ func _process(delta):
 
 func follow_path(cell):
 	goal_cell = cell.path_neighbours[0]
+	start_cell = cell
 	start_position = self.position
 	target_position = goal_cell.position
 	self.process_mode = Node.PROCESS_MODE_ALWAYS
