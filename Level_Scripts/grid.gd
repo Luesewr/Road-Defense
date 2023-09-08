@@ -196,6 +196,11 @@ func interact_cell():
 			update_selected_cell(CELLS[index])
 
 
+func reset_all_neighbours():
+	for cell in CELLS:
+		cell.path_neighbours = []
+
+
 func connect_paths():
 	var valid: bool = true
 	var completed_tracks = 0
@@ -218,7 +223,7 @@ func connect_paths():
 			var new_visited: VisitedNode = VisitedNode.new(current, current_visited)
 			
 			for spawner in SPAWNERS:
-				if spawner == current.grid_position:
+				if Vector2i(spawner.x, spawner.y) == current.grid_position:
 					found_spawner = true
 					new_visited.add_neighbours()
 					completed_tracks += 1
@@ -404,6 +409,7 @@ func _on_inside_control_update(in_ui: bool):
 	self.user_in_ui = in_ui
 
 func _on_play():
+	reset_all_neighbours()
 	connect_paths()
 
 
